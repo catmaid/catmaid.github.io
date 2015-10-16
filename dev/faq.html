@@ -113,11 +113,11 @@ the specified sub-folder.</p>
 bindings that are used by CATMAID have to be updated. Given you are within the
 <code class="docutils literal"><span class="pre">virtualenv</span></code> and in CATMAID&#8217;s <code class="docutils literal"><span class="pre">django</span></code> directory, the following should fix
 it:</p>
-<div class="highlight-python"><div class="highlight"><pre>grep h5py pip-frozen | xargs pip install -I
+<div class="highlight-python"><div class="highlight"><pre>grep h5py requirements.txt | xargs pip install -I
 </pre></div>
 </div>
 <p>This will reinstall (and recompile) the HDF5 python bindings with the version
-specified in our dependency file (<code class="docutils literal"><span class="pre">pip-frozen</span></code>).</p>
+specified in our dependency file (<code class="docutils literal"><span class="pre">requirements.txt</span></code>).</p>
 </div>
 <div class="section" id="i-get-an-error-500-response-and-in-debug-mode-i-see-the-error-libboost-python-so-1-56-0-cannot-open-shared-object-file-no-such-file-or-directory-or-any-other-boost-version-this-might-have-started-after-a-system-update">
 <h2>I get an error 500 response and in debug mode I see the error &#8220;libboost_python.so.1.56.0: cannot open shared object file: No such file or directory&#8221;. (Or any other boost version) This might have started after a system update.*<a class="headerlink" href="#i-get-an-error-500-response-and-in-debug-mode-i-see-the-error-libboost-python-so-1-56-0-cannot-open-shared-object-file-no-such-file-or-directory-or-any-other-boost-version-this-might-have-started-after-a-system-update" title="Permalink to this headline">¶</a></h2>
@@ -125,11 +125,11 @@ specified in our dependency file (<code class="docutils literal"><span class="pr
 depend on has to be recompiled: pgmagick. Given you are within the
 <code class="docutils literal"><span class="pre">virtualenv</span></code> and in CATMAID&#8217;s <code class="docutils literal"><span class="pre">django</span></code> directory, the following should fix
 it:</p>
-<div class="highlight-python"><div class="highlight"><pre>grep pgmagick pip-frozen | xargs pip install -I
+<div class="highlight-python"><div class="highlight"><pre>grep pgmagick requirements.txt | xargs pip install -I
 </pre></div>
 </div>
 <p>This will reinstall (and recompile) the pgmagick module, using the version
-specified in our dependency file (<code class="docutils literal"><span class="pre">pip-frozen</span></code>).</p>
+specified in our dependency file (<code class="docutils literal"><span class="pre">requirements.txt</span></code>).</p>
 </div>
 </div>
 

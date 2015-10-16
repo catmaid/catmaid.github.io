@@ -163,7 +163,54 @@ including:</p>
 <li>Maximum line length of 120 characters for code</li>
 <li><a class="reference external" href="https://www.python.org/dev/peps/pep-0008/#naming-conventions">PEP8 naming conventions</a></li>
 </ul>
-<p>All new code should include docstrings that follow <a class="reference external" href="https://www.python.org/dev/peps/pep-0257/">PEP257</a>.</p>
+<p>All new code should include docstrings that follow <a class="reference external" href="https://www.python.org/dev/peps/pep-0257/">PEP257</a> and use <a class="reference external" href="http://sphinxcontrib-napoleon.readthedocs.org/en/latest/example_google.html">Google&#8217;s argument
+formatting</a>.</p>
+<div class="section" id="http-api">
+<h4>HTTP API<a class="headerlink" href="#http-api" title="Permalink to this headline">¶</a></h4>
+<p>Functions that are exposed as HTTP API endpoints should declare what HTTP
+methods they accept using the <code class="code docutils literal"><span class="pre">&#64;api_view</span></code> decorator. Endpoints&#8217; docstrings
+should define what parameters they accept and the strucuture of their response
+in <a class="reference external" href="https://github.com/swagger-api/swagger-spec/blob/master/versions/1.2.md">Swagger spec</a>
+using django-rest-swagger&#8217;s <a class="reference external" href="http://django-rest-swagger.readthedocs.org/en/latest/yaml.html">YAML hooks</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@api_view</span><span class="p">([</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">api_endpoint</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Short endpoint description.</span>
+
+<span class="sd">    Longer description of the endpoint&#39;s purpose, expectations and behavior.</span>
+
+<span class="sd">    This endpoint returns an array of objects, so the model of the objects</span>
+<span class="sd">    in the array must be specified in a separate ``model`` stanza.</span>
+<span class="sd">    ---</span>
+<span class="sd">    parameters:</span>
+<span class="sd">        - name: resource_id</span>
+<span class="sd">          description: ID of a resource.</span>
+<span class="sd">          required: true</span>
+<span class="sd">          type: integer</span>
+<span class="sd">          paramType: form</span>
+<span class="sd">    models:</span>
+<span class="sd">      api_endpoint_inner_type:</span>
+<span class="sd">        id: api_endpoint_inner_type</span>
+<span class="sd">        properties:</span>
+<span class="sd">          name:</span>
+<span class="sd">            description: Name of some example type that this endpoint</span>
+<span class="sd">            type: string</span>
+<span class="sd">            required: true</span>
+<span class="sd">    type:</span>
+<span class="sd">    - type: array</span>
+<span class="sd">      items:</span>
+<span class="sd">        $ref: api_endpoint_inner_type</span>
+<span class="sd">      required: true</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#...</span>
+</pre></div>
+</div>
+<p>API URLs should prefer plural resource names and use hyphens rather than
+underscores. Parameters that are not resource identifiers should be passed as
+query or form parameters, not in the URL path. If an endpoint accepts an array
+of parameters, it should support receiving the array encoded as JSON; form
+array parameters may be accepted, but a JSON array in a single form parameter
+must be accepted for ease of use.</p>
+</div>
 </div>
 <div class="section" id="javascript">
 <h3>Javascript<a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h3>
@@ -319,7 +366,10 @@ example, with the default configuration this would be:</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#code-style-and-conventions">Code Style and Conventions</a><ul>
-<li><a class="reference internal" href="#python">Python</a></li>
+<li><a class="reference internal" href="#python">Python</a><ul>
+<li><a class="reference internal" href="#http-api">HTTP API</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#javascript">Javascript</a></li>
 <li><a class="reference internal" href="#git">Git</a></li>
 </ul>
