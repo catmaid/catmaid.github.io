@@ -58,7 +58,7 @@
   <div class="section" id="django-unit-tests-for-catmaid">
 <h1>Django Unit Tests for CATMAID<a class="headerlink" href="#django-unit-tests-for-catmaid" title="Permalink to this headline">¶</a></h1>
 <p>If you want to be able to run the unit tests, you will need to allow
-the catmaid database user (catmaid_user by default) to create new
+the catmaid database user (<code class="docutils literal"><span class="pre">catmaid_user</span></code> by default) to create new
 databases.</p>
 <p>Start a postgres shell with:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo -u postgres psql
@@ -70,7 +70,7 @@ ALTER ROLE
 </pre></div>
 </div>
 <p>... and you should also add this line at the top of
-<em>/etc/postgresql/XversionX/main/pg_hba.conf</em></p>
+<code class="docutils literal"><span class="pre">/etc/postgresql/XversionX/main/pg_hba.conf</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre>local test_catmaid catmaid_user md5
 </pre></div>
 </div>
@@ -96,19 +96,19 @@ ALTER ROLE catmaid_user WITH superuser;
 </div>
 <div class="section" id="loading-the-test-fixtures-schema-and-data-into-a-new-catmaid-database">
 <h2>Loading the test fixtures (schema and data) into a new CATMAID database<a class="headerlink" href="#loading-the-test-fixtures-schema-and-data-into-a-new-catmaid-database" title="Permalink to this headline">¶</a></h2>
-<p>Directly editing the data in the test fixtures (<cite>django/applications/catmaid/tables_and_data.sql</cite>) would be very error-prone.  A better idea is to create a new CATMAID instance pointing to a database that only contains the fixture data.  Then you should only very carefully make changes to the CATMAID instance where they are required to support a new test you want to add.</p>
-<p>To create such an instance, follow the usual installation instructions for CATMAID up to the point where you would use the <cite>createuser.sh</cite> script, and make sure that you specify a new database name, e.g. <cite>catmaid_fixture</cite>:</p>
+<p>Directly editing the data in the test fixtures (<code class="docutils literal"><span class="pre">django/applications/catmaid/fixtures/catmaid_testdata.json</span></code>) would be very error-prone.  A better idea is to create a new CATMAID instance pointing to a database that only contains the fixture data.  Then you should only very carefully make changes to the CATMAID instance where they are required to support a new test you want to add.</p>
+<p>To create such an instance, follow the usual installation instructions for CATMAID up to the point where you would use the <code class="docutils literal"><span class="pre">createuser.sh</span></code> script, and make sure that you specify a new database name, e.g. <code class="docutils literal"><span class="pre">catmaid_fixture</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre>scripts/createuser.sh catmaid_fixture catmaid_user p4ssw0rd | sudo -u postgres psql
 </pre></div>
 </div>
 <p>Then, rather than loading the usual example data, just import the fixture data:</p>
-<div class="highlight-python"><div class="highlight"><pre>psql -U catmaid_user catmaid_fixture &lt; django/applications/vncbrowser/tables_and_data.sql
+<div class="highlight-python"><div class="highlight"><pre>psql -U catmaid_user catmaid_fixture &lt; django/applications/catmaid/fixtures/catmaid_testdata.json
 </pre></div>
 </div>
 <p>If you want to start again and reload the fixture data into the test database, you can do:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo -u postgres dropdb catmaid_fixture
 scripts/createuser.sh catmaid_fixture catmaid_user p4ssw0rd | sudo -u postgres psql
-psql -U catmaid_user catmaid_fixture &lt; django/applications/vncbrowser/tables_and_data.sql
+psql -U catmaid_user catmaid_fixture &lt; django/applications/catmaid/fixtures/catmaid_testdata.json
 </pre></div>
 </div>
 </div>
@@ -116,14 +116,14 @@ psql -U catmaid_user catmaid_fixture &lt; django/applications/vncbrowser/tables_
 <h2>Dumping changes in a CATMAID instance back to the test fixtures<a class="headerlink" href="#dumping-changes-in-a-catmaid-instance-back-to-the-test-fixtures" title="Permalink to this headline">¶</a></h2>
 <p>Suppose that to create the data for your test, you needed to add a skeleton and a neuron in your CATMAID instance.  You should then dump the database back to the fixture files afterwards:</p>
 <div class="highlight-python"><div class="highlight"><pre>cd ~/catmaid
-scripts/database/dump-database.sh catmaid_fixture &gt; django/applications/vncbrowser/tables_and_data.sql
+scripts/database/dump-database.sh catmaid_fixture &gt; django/applications/catmaid/fixtures/catmaid_testdata.json
 </pre></div>
 </div>
-<p>Then run <cite>git diff</cite> to check that the additions to the fixtures make sense.  (It&#8217;s a good idea to check how these changes to the fixtures affect which tests pass.)</p>
+<p>Then run <code class="docutils literal"><span class="pre">git</span> <span class="pre">diff</span></code> to check that the additions to the fixtures make sense.  (It&#8217;s a good idea to check how these changes to the fixtures affect which tests pass.)</p>
 </div>
 <div class="section" id="test-coverage">
 <h2>Test coverage<a class="headerlink" href="#test-coverage" title="Permalink to this headline">¶</a></h2>
-<p>If you install <cite>coverage.py</cite> (<cite>pip install coverage</cite> in your virtualenv) you can generate test coverage statistics with:</p>
+<p>If you install <code class="docutils literal"><span class="pre">coverage.py</span></code> (<code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">coverage</span></code> in your virtualenv) you can generate test coverage statistics with:</p>
 <div class="highlight-python"><div class="highlight"><pre>coverage run ./manage.py test catmaid
 </pre></div>
 </div>
@@ -131,7 +131,7 @@ scripts/database/dump-database.sh catmaid_fixture &gt; django/applications/vncbr
 <div class="highlight-python"><div class="highlight"><pre>coverage html
 </pre></div>
 </div>
-<p>... to generate HTML output in <cite>htmlcov/index.html</cite></p>
+<p>... to generate HTML output in <code class="docutils literal"><span class="pre">htmlcov/index.html</span></code>.</p>
 </div>
 </div>
 
