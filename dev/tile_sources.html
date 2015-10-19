@@ -1,0 +1,388 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tile Source Conventions &mdash; CATMAID 2015.7.17-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2015.7.17-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="CATMAID 2015.7.17-dev documentation" href="index.html" />
+    <link rel="up" title="Developer Documentation" href="developer.html" />
+    <link rel="next" title="Database Migrations" href="dbmigration.html" />
+    <link rel="prev" title="Contributing to CATMAID" href="contributing.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dbmigration.html" title="Database Migrations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="contributing.html" title="Contributing to CATMAID"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2015.7.17-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="developer.html" accesskey="U">Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tile-source-conventions">
+<h1>Tile Source Conventions<a class="headerlink" href="#tile-source-conventions" title="Permalink to this headline">¶</a></h1>
+<p>CATMAID does not serve image data itself. Instead, it stores a few critical
+pieces of information about the image volume and specifies a set of conventions
+for retrieving image data from a separate image volume host. These
+conventions are <cite>tile source types</cite>, which define parameters and URL formats
+both the CATMAID backend and frontend can use to access image data for
+rendering and analysis.</p>
+<p>This document provides information on the type source types specified by
+CATMAID, the parameters which they use to retrieve image data, how this is
+stored in the CATMAID backend, and how to create a new tile source type in the
+CATMAID backend and frontend.</p>
+<div class="section" id="tile-source-parameters">
+<h2>Tile Source Parameters<a class="headerlink" href="#tile-source-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Each tile source type uses a subset of the following parameters to determine
+its source regardless of the specific tiles being retrieved. Though specific
+APIs may use different names for these parameters, the names provided here are
+used for consistency in defining tile source types below:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">sourceBaseURL</span></code> (string)</dt>
+<dd>This defines a base URL for the source server and volume, including trailing
+slash.</dd>
+<dt><code class="docutils literal"><span class="pre">dimension</span></code> (integer array [x, y, z])</dt>
+<dd>Dimension of the image volume in pixels at its original scale level.</dd>
+<dt><code class="docutils literal"><span class="pre">resolution</span></code> (double array [x, y, z])</dt>
+<dd>Resolution of the image volume in nanometers at its original scale level.</dd>
+<dt><code class="docutils literal"><span class="pre">numZoomLevels</span></code> (integer)</dt>
+<dd>The number of zoom levels (downsampling octaves) which the source supports.</dd>
+<dt><code class="docutils literal"><span class="pre">fileExtension</span></code> (string)</dt>
+<dd>Filename extension for image tiles served by the source.</dd>
+</dl>
+<p><code class="docutils literal"><span class="pre">tileWidth</span></code> (integer)</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">tileHeight</span></code> (integer)</dt>
+<dd>Dimensions of image tiles in pixels. For pre-tiled sources, this should be
+the dimensions of the source tiles, while for dynamic sources this should be
+the preferred dimension for retrieval and rendering.</dd>
+<dt><code class="docutils literal"><span class="pre">orientation</span></code> (integer|string)</dt>
+<dd><p class="first">Orientation of the stack relation to project space. Semantically this value
+is either &#8220;XY&#8221;, &#8220;XZ&#8221;, &#8220;ZY&#8221;, but is usually passed as an integer in {0, 1, 2}
+enumerating these, respectively.</p>
+<p class="last">Currently only DVID tile source types (6, 8) must know orientation directly.
+Other tile source types encode orientation in the <code class="docutils literal"><span class="pre">sourceBaseURL</span></code>.</p>
+</dd>
+<dt><code class="docutils literal"><span class="pre">tileSourceType</span></code> (integer)</dt>
+<dd>A integer enumerating the types of tile sources listed below.</dd>
+</dl>
+</div>
+<div class="section" id="tile-parameters">
+<h2>Tile Parameters<a class="headerlink" href="#tile-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Tile sources may additionally make use of a subset of the following
+parameters when determining how to retrieve specific tile requests:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">row</span></code> (integer)</dt>
+<dd>The row of the tile in the image grid for this z-slice, e.g., the floor of
+the tile y origin divided by <code class="docutils literal"><span class="pre">tileHeight</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">col</span></code> (integer)</dt>
+<dd>The column of the tile in the image grid for this z-slice, e.g., the floor of
+the tile x origin divided by <code class="docutils literal"><span class="pre">tileWidth</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">zoomLevel</span></code> (integer)</dt>
+<dd>The zoom level of tiles to retrieve. Zoom level 0 is the original scale,
+zoom level 1 is the first downsampled octave, etc.</dd>
+<dt><code class="docutils literal"><span class="pre">pixelPosition</span></code> (integer array [x, y, z])</dt>
+<dd>The <em>stack space</em> position in pixels of a location in the plane of the tile.
+Usually this position is shared for many tile requests, e.g., the center of
+a stack viewer, and is used only to generate a path using the <code class="docutils literal"><span class="pre">z</span></code> location
+in the stack.</dd>
+</dl>
+</div>
+<div class="section" id="tile-source-types">
+<h2>Tile Source Types<a class="headerlink" href="#tile-source-types" title="Permalink to this headline">¶</a></h2>
+<p>Tile source types are listed by the enumeration integer ID referenced by
+<code class="docutils literal"><span class="pre">tileSourceType</span></code>:</p>
+<div class="section" id="file-based-image-stack">
+<h3>1. File-based image stack<a class="headerlink" href="#file-based-image-stack" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;pixelPosition.z&gt;/&lt;row&gt;_&lt;col&gt;_&lt;zoomLevel&gt;.&lt;fileExtension&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="request-query-based-image-stack">
+<h3>2. Request query-based image stack<a class="headerlink" href="#request-query-based-image-stack" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseURL&gt;?x=&lt;col * tileWidth&gt;
+               &amp;y=&lt;row * tileHeight&gt;
+               &amp;z=&lt;pixelPosition.z&gt;
+               &amp;width=&lt;tileWidth&gt;
+               &amp;height=&lt;tileHeight&gt;
+               &amp;scale=&lt;2^-zoomLevel&gt;
+               &amp;row=y
+               &amp;col=x
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="hdf5-via-catmaid-backend">
+<h3>3. HDF5 via CATMAID backend<a class="headerlink" href="#hdf5-via-catmaid-backend" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>This is the only tile source type which the CATMAID backend serves directly.
+Django retrieves tile requests from an image volume stored in an HDF5 file.
+This is a convenience source intended for quick exploration of small volumes
+only and does not scale to large volumes or many users.</p>
+<p>As an exceptional source, this uses the following tile source parameters
+that should not be used by any other source:</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">catmaidURL</span></code> (string)</dt>
+<dd>Base URL of the CATMAID instance serving the volume, including trailing
+slash.</dd>
+<dt><code class="docutils literal"><span class="pre">projectId</span></code> (integer)</dt>
+<dd>ID of the CATMAID project.</dd>
+<dt><code class="docutils literal"><span class="pre">stackId</span></code> (integer)</dt>
+<dd>ID of the CATMAID stack.</dd>
+</dl>
+<p>URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;catmaidURL&gt;&lt;projectId&gt;/stack/&lt;stackID&gt;/tile?x=&lt;col * tileWidth&gt;
+                                            &amp;y=&lt;row * tileHeight&gt;
+                                            &amp;z=&lt;pixelPosition.z&gt;
+                                            &amp;width=&lt;tileWidth&gt;
+                                            &amp;height=&lt;tileHeight&gt;
+                                            &amp;scale=&lt;2^-zoomLevel&gt;
+                                            &amp;row=y
+                                            &amp;col=x
+                                            &amp;file_extension=&lt;fileExtension&gt;
+                                            &amp;basename=&lt;sourceBaseURL&gt;
+                                            &amp;type=all
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="file-based-image-stack-with-zoom-level-directories">
+<h3>4. File-based image stack with zoom level directories<a class="headerlink" href="#file-based-image-stack-with-zoom-level-directories" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>A variation on tile source type 1 where the zoom level is also a directory.</p>
+<p>URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;pixelPosition.z&gt;/&lt;zoomLevel&gt;/&lt;row&gt;_&lt;col&gt;.&lt;fileExtension&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="directory-based-image-stack">
+<h3>5. Directory-based image stack<a class="headerlink" href="#directory-based-image-stack" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Like tile source types 1 and 4, but with all components being directories.</p>
+<p>URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;zoomLevel&gt;/&lt;pixelPosition.z&gt;/&lt;row&gt;/&lt;col&gt;.&lt;fileExtension&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="dvid-imageblk-voxels">
+<h3>6. DVID <code class="docutils literal"><span class="pre">imageblk</span></code> voxels<a class="headerlink" href="#dvid-imageblk-voxels" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>This type supports loading tiles from voxel data instances in
+<a class="reference external" href="https://github.com/janelia-flyem/dvid">DVID</a> using
+<code class="docutils literal"><span class="pre">imageblk</span></code> (<code class="docutils literal"><span class="pre">uint8blk</span></code>, <code class="docutils literal"><span class="pre">rgba8blk</span></code>) datatypes.</p>
+<p>For DVID <code class="docutils literal"><span class="pre">imageblk</span></code> tile sources, <code class="docutils literal"><span class="pre">sourceBaseURL</span></code> should reference the
+data instance REST resource with orientation information directly, that is:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;api URL&gt;/node/&lt;UUID&gt;/&lt;data name&gt;/raw/&lt;dims&gt;/
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">fileExtension</span></code> may also specify a quality parameter, e.g., <code class="docutils literal"><span class="pre">jpg:80</span></code>.</p>
+<p>Because orientations are just permutations of coordinates in the
+voxel volume, each orientation has a slightly different URL format.</p>
+<p>XY format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;tileWidth&gt;_&lt;tileHeight&gt;/&lt;col * tileWidth&gt;_&lt;row * tileHeight&gt;_&lt;pixelPosition.z&gt;/&lt;fileExtension&gt;
+</pre></div>
+</div>
+<p>XZ format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;tileWidth&gt;_&lt;tileHeight&gt;/&lt;col * tileWidth&gt;_&lt;pixelPosition.z&gt;_&lt;row * tileHeight&gt;/&lt;fileExtension&gt;
+</pre></div>
+</div>
+<p>ZY format (actually YZ, see note):</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;tileWidth&gt;_&lt;tileHeight&gt;/&lt;pixelPosition.z&gt;_&lt;row * tileHeight&gt;_&lt;col * tileWidth&gt;/&lt;fileExtension&gt;
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because DVID prefers YZ axis ordering over ZY, note that tiles for that
+orientation must be transposed to be consistent with other tile source
+types.</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="render-service">
+<h3>7. Render service<a class="headerlink" href="#render-service" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>This tile source type retrieves image tiles from the dynamic
+<a class="reference external" href="https://github.com/saalfeldlab/render/tree/ws_phase_1">render service</a>
+used by the FlyTEM project at Janelia Research Campus.</p>
+<p>URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseURL&gt;z/&lt;pixelPosition.z&gt;/box/&lt;col * tileWidth&gt;,&lt;row * tileHeight&gt;,&lt;tileWidth&gt;,&lt;tileHeight&gt;,&lt;2^-zoomLevel&gt;/&lt;fileExtension&gt;-image
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="dvid-imagetile-tiles">
+<h3>8. DVID <code class="docutils literal"><span class="pre">imagetile</span></code> tiles<a class="headerlink" href="#dvid-imagetile-tiles" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>This type supports loading tiles from tile data instances in
+<a class="reference external" href="https://github.com/janelia-flyem/dvid">DVID</a> using
+<code class="docutils literal"><span class="pre">imagetile</span></code> datatypes.</p>
+<p>For DVID <code class="docutils literal"><span class="pre">imagetile</span></code> tile sources, <code class="docutils literal"><span class="pre">sourceBaseURL</span></code> should reference the
+data instance REST resource directly, that is:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;api URL&gt;/node/&lt;UUID&gt;/&lt;data name&gt;/tile/
+</pre></div>
+</div>
+<p>Because orientations are just permutations of coordinates in the
+voxel volume, each orientation has a slightly different URL format.</p>
+<p>XY format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;xy/&lt;zoomLevel&gt;/&lt;col&gt;_&lt;row&gt;_&lt;pixelPosition.z&gt;
+</pre></div>
+</div>
+<p>XZ format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;xz/&lt;zoomLevel&gt;/&lt;col&gt;_&lt;pixelPosition.z&gt;_&lt;row&gt;
+</pre></div>
+</div>
+<p>ZY format (actually YZ, see note):</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;yz/&lt;zoomLevel&gt;/&lt;pixelPosition.z&gt;_&lt;row&gt;_col
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Because DVID prefers YZ axis ordering over ZY, note that tiles for that
+orientation must be transposed to be consistent with other tile source
+types.</p>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="backend-representation">
+<h2>Backend Representation<a class="headerlink" href="#backend-representation" title="Permalink to this headline">¶</a></h2>
+<p>Tile source parameters are stored in the <code class="docutils literal"><span class="pre">Stack</span></code> Django model. To create a
+new tile source type, one needs only to establish a convention for the integer
+that enumerates that type (after communication with the developers) and begin
+using it in stacks.</p>
+<p>To support cropping, the backend also implements tile sources. To support
+cropping for a new tile source type, implement a method
+in <code class="docutils literal"><span class="pre">catmaid.control.cropping.CropJob</span></code> like
+other <code class="docutils literal"><span class="pre">get_tile_path_&lt;tileSourceType&gt;</span></code> methods that returns the correct URL,
+then make sure it is called from the <code class="docutils literal"><span class="pre">CropJob.initialize</span></code> method.</p>
+</div>
+<div class="section" id="frontend-retrieval">
+<h2>Frontend Retrieval<a class="headerlink" href="#frontend-retrieval" title="Permalink to this headline">¶</a></h2>
+<p>The front end implements tile source URL generation in
+<code class="docutils literal"><span class="pre">django/applications/catmaid/static/js/tilesource.js</span></code>. To define a new tile
+source type, follow the convention of the existing tiles sources by creating
+a function that returns an object with the appropriate <code class="docutils literal"><span class="pre">getTileURL</span></code>,
+<code class="docutils literal"><span class="pre">getOverviewURL</span></code>, and <code class="docutils literal"><span class="pre">getOverviewLayer</span></code> methods. The overview URL should
+locate a thumbnail of the current stack z-section. Then map the
+<code class="docutils literal"><span class="pre">tileSourceType</span></code> enumeration of your tile source type to your implementation
+in <code class="docutils literal"><span class="pre">CATMAID.getTileSource</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo" src="_static/catmaidlogo.png" alt="Logo" align="left"/>
+</a></p>
+<br clear="all"/><br /><h3><a href="index.html">Home</a></h3>
+<h3><a href="screenshots.html">Screenshots</a></h3>
+<h3><a href="whouses.html">Who uses it?</a></h3>
+<h3><a href="publications.html">Publications</a></h3>
+<h3><a href="funding.html">Funding</a></h3>
+<h3><a href="credits.html">Credits</a></h3>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/catmaid/CATMAID">Source Code</a></li>
+  <li><a href="http://github.com/catmaid/CATMAID/issues">Issues</a></li>
+  <li><a href="http://groups.google.com/group/CATMAID">Mailinglist</a></li>
+  <li><a href="http://fly.mpi-cbg.de/~saalfeld/catmaid/">Old page</a></li>
+</ul>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17713054-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tile Source Conventions</a><ul>
+<li><a class="reference internal" href="#tile-source-parameters">Tile Source Parameters</a></li>
+<li><a class="reference internal" href="#tile-parameters">Tile Parameters</a></li>
+<li><a class="reference internal" href="#tile-source-types">Tile Source Types</a><ul>
+<li><a class="reference internal" href="#file-based-image-stack">1. File-based image stack</a></li>
+<li><a class="reference internal" href="#request-query-based-image-stack">2. Request query-based image stack</a></li>
+<li><a class="reference internal" href="#hdf5-via-catmaid-backend">3. HDF5 via CATMAID backend</a></li>
+<li><a class="reference internal" href="#file-based-image-stack-with-zoom-level-directories">4. File-based image stack with zoom level directories</a></li>
+<li><a class="reference internal" href="#directory-based-image-stack">5. Directory-based image stack</a></li>
+<li><a class="reference internal" href="#dvid-imageblk-voxels">6. DVID <code class="docutils literal"><span class="pre">imageblk</span></code> voxels</a></li>
+<li><a class="reference internal" href="#render-service">7. Render service</a></li>
+<li><a class="reference internal" href="#dvid-imagetile-tiles">8. DVID <code class="docutils literal"><span class="pre">imagetile</span></code> tiles</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#backend-representation">Backend Representation</a></li>
+<li><a class="reference internal" href="#frontend-retrieval">Frontend Retrieval</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation</a><ul>
+  <li><a href="developer.html">Developer Documentation</a><ul>
+      <li>Previous: <a href="contributing.html" title="previous chapter">Contributing to CATMAID</a></li>
+      <li>Next: <a href="dbmigration.html" title="next chapter">Database Migrations</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2015, CATMAID Developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
