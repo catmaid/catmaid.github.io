@@ -171,6 +171,15 @@ including:</p>
 formatting</a>.</p>
 <div class="section" id="http-api">
 <h4>HTTP API<a class="headerlink" href="#http-api" title="Permalink to this headline">¶</a></h4>
+<p>Documentation for endpoints exposed by the HTTP API is available from the
+CATMAID server itself via the <code class="docutils literal"><span class="pre">/apis/</span></code> page:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:8000/apis/
+</pre></div>
+</div>
+<p>... or, for custom configurations:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://&lt;catmaid_servername&gt;/&lt;catmaid_subdirectory&gt;/apis/
+</pre></div>
+</div>
 <p>Functions that are exposed as HTTP API endpoints should declare what HTTP
 methods they accept using the <code class="code docutils literal"><span class="pre">&#64;api_view</span></code> decorator. Endpoints&#8217; docstrings
 should define what parameters they accept and the strucuture of their response
