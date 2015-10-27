@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Administrator Documentation &mdash; CATMAID 2015.7.17-dev documentation</title>
+    <title>Frequently Asked (User) Questions &mdash; CATMAID 2015.7.17-dev documentation</title>
     
     <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -28,8 +28,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="top" title="CATMAID 2015.7.17-dev documentation" href="index.html" />
-    <link rel="next" title="Basic Installation Instructions" href="installation.html" />
-    <link rel="prev" title="Similar Software Tools" href="othertools.html" /> 
+    <link rel="up" title="User Documentation" href="user.html" />
+    <link rel="next" title="Similar Software Tools" href="othertools.html" />
+    <link rel="prev" title="Tools" href="tools.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -39,12 +40,13 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="installation.html" title="Basic Installation Instructions"
+          <a href="othertools.html" title="Similar Software Tools"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="othertools.html" title="Similar Software Tools"
+          <a href="tools.html" title="Tools"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2015.7.17-dev documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2015.7.17-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User Documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,17 +55,24 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="administrator-documentation">
-<h1>Administrator Documentation<a class="headerlink" href="#administrator-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Basic Installation Instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="administration.html">Administering a CATMAID Instance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="userprofiles.html">User Profiles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="celeryinstall.html">Installation of the CELERY Task Queue</a></li>
-<li class="toctree-l1"><a class="reference internal" href="alternative_install.html">Setting Up Nginx for CATMAID</a></li>
-<li class="toctree-l1"><a class="reference internal" href="admin_faq.html">Frequently Asked Questions</a></li>
-</ul>
+  <div class="section" id="frequently-asked-user-questions">
+<h1>Frequently Asked (User) Questions<a class="headerlink" href="#frequently-asked-user-questions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="why-can-i-only-export-webm-movies-from-the-3d-viewer">
+<span id="faq-3dviewer-webm"></span><h2>Why can I only export WebM movies from the 3D viewer?<a class="headerlink" href="#why-can-i-only-export-webm-movies-from-the-3d-viewer" title="Permalink to this headline">¶</a></h2>
+<p>There is currently no easy way to generate other formats from within a browser.
+Besides, WebM is a reasonable effort to standardize and it seems to be the
+future play-everywhere codec. However, you can use other tools to convert the
+generated WebM movie to your preferred video format (e.g. to play it in
+PowerPoint). A convenient GUI tool to do this is
+<a class="reference external" href="https://handbrake.fr/">Handbrake</a>. Alternatively, if you prefer the command
+line, you could use <code class="docutils literal"><span class="pre">ffmpeg</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre>ffmpeg -y -i input.webm -vcodec libx264 output.mov
+</pre></div>
+</div>
+<p>or avconv:</p>
+<div class="highlight-python"><div class="highlight"><pre>avconv -i input.webm -vcodec copy output.mov
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -100,11 +109,21 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
-</script><h3>Related Topics</h3>
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Frequently Asked (User) Questions</a><ul>
+<li><a class="reference internal" href="#why-can-i-only-export-webm-movies-from-the-3d-viewer">Why can I only export WebM movies from the 3D viewer?</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation</a><ul>
-      <li>Previous: <a href="othertools.html" title="previous chapter">Similar Software Tools</a></li>
-      <li>Next: <a href="installation.html" title="next chapter">Basic Installation Instructions</a></li>
+  <li><a href="user.html">User Documentation</a><ul>
+      <li>Previous: <a href="tools.html" title="previous chapter">Tools</a></li>
+      <li>Next: <a href="othertools.html" title="next chapter">Similar Software Tools</a></li>
+  </ul></li>
   </ul></li>
 </ul>
         </div>
