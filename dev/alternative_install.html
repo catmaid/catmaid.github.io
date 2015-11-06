@@ -112,7 +112,7 @@ following, a Nginx configuration is provided to give access to CATMAID:</p>
         <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
         <span class="c1"># This lets Django know which protocol was used to connect and also</span>
         <span class="c1"># overrides the header a client who fakes it.</span>
-        <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-Protocol</span> <span class="nv">$scheme</span><span class="p">;</span>
+        <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-Proto</span> <span class="nv">$scheme</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
