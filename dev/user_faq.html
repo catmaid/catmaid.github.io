@@ -74,6 +74,31 @@ line, you could use <code class="docutils literal"><span class="pre">ffmpeg</spa
 </pre></div>
 </div>
 </div>
+<div class="section" id="what-are-skeleton-source-subscriptions">
+<span id="faq-source-subscriptions"></span><h2>What are skeleton source subscriptions?<a class="headerlink" href="#what-are-skeleton-source-subscriptions" title="Permalink to this headline">¶</a></h2>
+<p>Many tracing related widgets allow to react to changes in skeleton lists in
+other widgets. Widgets supporting this got a new small chain icon in their title
+bar with which a subscription management user interface can be shown and hidden.
+Widgets that contain multiple sources, like the connectivity matrix, have one
+icon per source. A hover title will show which one to use for each source.</p>
+<p>The UI allows to add subscriptions to multiple sources which can then be
+combined through set operations. Currently sources are combined in a strict
+left-associative fashion from top to bottom of the list. When &#8220;Override
+existing&#8221; is checked, widget local skeletons are not used when subscriptions are
+refreshed and will subsequently be removed. Otherwise, the local set is united
+with the first subscription before all other subscription sources are applied.</p>
+<p>The scope of individual subscriptions can be adjusted: By default each
+subscription reacts to skeletons added, removed and updated in a source. The
+&#8220;Filter&#8221; selection allows to listen to only one of these events. For instance,
+subscribing to the active skeleton with the &#8220;Only additions&#8221; filter, allows to
+collect skeletons selected active skeletons without removing them again from a
+widget.</p>
+<p>By default, only selected skeletons are subscribed to. This means if a skeleton
+becomes unselected in a source it is removed from the target widget. If the
+&#8220;Only selected&#8221; checkbox is unchecked, also unselected skeletons are added to a
+target widget. They are removed when skeletons are removed from the source and
+their selection state is synced.</p>
+</div>
 </div>
 
 
@@ -114,6 +139,7 @@ line, you could use <code class="docutils literal"><span class="pre">ffmpeg</spa
   <ul>
 <li><a class="reference internal" href="#">Frequently Asked (User) Questions</a><ul>
 <li><a class="reference internal" href="#why-can-i-only-export-webm-movies-from-the-3d-viewer">Why can I only export WebM movies from the 3D viewer?</a></li>
+<li><a class="reference internal" href="#what-are-skeleton-source-subscriptions">What are skeleton source subscriptions?</a></li>
 </ul>
 </li>
 </ul>
