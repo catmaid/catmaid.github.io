@@ -311,6 +311,7 @@ to help verify the correctness and quality of CATMAID:</p>
 <ul class="simple">
 <li><a class="reference internal" href="djangounittest.html"><em>Unit and integration tests for Django backend</em></a></li>
 <li>Linting (static analysis) of the javascript code with JSHint</li>
+<li>Linting of CSS with csslint</li>
 <li>Unit tests of javascript code with QUnit</li>
 </ul>
 <p>If you <a class="reference external" href="http://docs.travis-ci.com/user/getting-started/#Step-two%3A-Activate-GitHub-Webhook">enable Travis-CI for your fork of CATMAID on GitHub</a>, Travis will
@@ -332,6 +333,11 @@ defaults:</p>
 <div class="highlight-python"><div class="highlight"><pre>ln -s .travis.jshintrc .jshintrc
 ln -s .travis.jshintignore .jshintignore
 jshint django/applications
+</pre></div>
+</div>
+<p>CSS linting is performed by running <cite>csslint</cite> from the static CSS directory:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd django/applications/catmaid/static/css
+csslint .
 </pre></div>
 </div>
 <p>QUnit tests can be run from the browser while your Django server is running. For

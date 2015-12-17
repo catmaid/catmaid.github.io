@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using the CATMAID API &mdash; CATMAID 2015.7.17-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2015.7.17-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="CATMAID 2015.7.17-dev documentation" href="index.html" />
+    <link rel="up" title="User Documentation" href="user.html" />
+    <link rel="next" title="Frequently Asked (User) Questions" href="user_faq.html" />
+    <link rel="prev" title="Instructions for Tracing Neurons" href="tracing_neurons.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="user_faq.html" title="Frequently Asked (User) Questions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tracing_neurons.html" title="Instructions for Tracing Neurons"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2015.7.17-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-the-catmaid-api">
+<h1>Using the CATMAID API<a class="headerlink" href="#using-the-catmaid-api" title="Permalink to this headline">¶</a></h1>
+<p>You may want to query data or perform analyses in ways that are not possible
+through the CATMAID client. <a class="reference external" href="https://github.com/catmaid/CATMAID/wiki/Scripting">Scripting the CATMAID client</a> is sufficient for some
+cases, but others require direct access to annotation data, especially
+for use in a programming environment like Python or R. For these cases, the
+same HTTP API that the CATMAID client uses is exposed to other clients.</p>
+<div class="section" id="api-documentation">
+<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Documentation for endpoints exposed by the HTTP API is available from the
+CATMAID server itself via the <code class="docutils literal"><span class="pre">/apis/</span></code> page:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://localhost:8000/apis/
+</pre></div>
+</div>
+<p>... or, for custom configurations:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://&lt;catmaid_servername&gt;/&lt;catmaid_subdirectory&gt;/apis/
+</pre></div>
+</div>
+<p>The API documentation list groups of related endpoints, like &#8220;skeletons&#8221;,
+and specific HTTP methods (&#8220;GET&#8221;, &#8220;POST&#8221;, etc.) and URIs for calling each
+endpoint.</p>
+<div class="figure">
+<img alt="_images/api-docs.png" src="_images/api-docs.png" />
+</div>
+<p>Clicking on one of these endpoints opens detailed documentation including
+a description of what the endpoint does, what parameters is expects and
+accepts, and how the response is structured. The form at the bottom of the
+endpoint documentation allows it to be invoked directly using values provided
+in the form fields.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Remember that API documentation forms operate on actual data on the
+CATMAID server. Be careful not to unintentionally destroy or modify data.</p>
+</div>
+<div class="figure">
+<img alt="_images/api-docs-endpoint.png" src="_images/api-docs-endpoint.png" />
+</div>
+<p>Changes to the API are documented in the <a class="reference external" href="https://github.com/catmaid/CATMAID/blob/master/API_CHANGELOG.md">API changelog</a>.</p>
+</div>
+<div class="section" id="undocumented-api">
+<h2>Undocumented API<a class="headerlink" href="#undocumented-api" title="Permalink to this headline">¶</a></h2>
+<p>Only a subset of the HTTP endpoints exposed by CATMAID are documented. While
+the documentation attempts to cover endpoints most likely to be useful for
+external analysis, undocumented endpoints can still be accessed if they are
+useful.</p>
+<p>Undocumented endpoints can be discovered by looking through <a class="reference external" href="https://github.com/catmaid/CATMAID/blob/master/django/applications/catmaid/urls.py">urls.py</a>
+in the CATMAID source. This file routes URI patterns to Python functions, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">urlpatterns</span> <span class="o">+=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;catmaid.control.treenode&#39;</span><span class="p">,</span>
+    <span class="c">#...</span>
+    <span class="p">(</span><span class="s">r&#39;^(?P&lt;project_id&gt;\d+)/treenode/delete$&#39;</span><span class="p">,</span> <span class="s">&#39;delete_treenode&#39;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>routes a URI like <code class="docutils literal"><span class="pre">/{project_id}/treenode/delete</span></code> to Python function
+<code class="docutils literal"><span class="pre">delete_treenode</span></code>, which is in the file
+<code class="docutils literal"><span class="pre">django/applications/catmaid/control/treenode.py</span></code>.
+Using an undocumented endpoint requires inspecting the Python function to
+see what parameters it expects.</p>
+<p>Note that the undocumented API is considered volatile and changes to it are
+not included in the API changelog.</p>
+</div>
+<div class="section" id="api-token">
+<h2>API Token<a class="headerlink" href="#api-token" title="Permalink to this headline">¶</a></h2>
+<p>The CATMAID API authorizes requests using an API token tied to user
+account instead of a username and password. To obtain your API token,
+open the CATMAID client in your browser, hover your cursor over your name
+(next to the &#8220;Logout&#8221; link), and click &#8220;Get API token&#8221;.</p>
+<div class="figure">
+<img alt="_images/api-token.png" src="_images/api-token.png" />
+</div>
+<p>As a security measure, you will be prompted to re-enter your password,
+then shown your token string.</p>
+<p>To use the API token, set the HTTP <code class="docutils literal"><span class="pre">Authorization</span></code> header on all of your
+API requests to be &#8220;Token&#8221;, a space, and the token string, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Requests using your token can do anything your account can do, so
+<strong>do not distribute your token or check it into source control.</strong></p>
+</div>
+</div>
+<div class="section" id="example-api-use">
+<h2>Example API Use<a class="headerlink" href="#example-api-use" title="Permalink to this headline">¶</a></h2>
+<p>Below is a minimal example of accessing the API of a CATMAID server
+running on <code class="docutils literal"><span class="pre">localhost</span></code> using the <a class="reference external" href="http://docs.python-requests.org/en/latest/index.html">Requests Python package</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">requests.auth</span> <span class="kn">import</span> <span class="n">AuthBase</span>
+
+<span class="k">class</span> <span class="nc">CatmaidApiTokenAuth</span><span class="p">(</span><span class="n">AuthBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attaches HTTP Authorization Token headers to the given Request.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Token {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+<span class="c"># Replace these fake values with your own.</span>
+<span class="n">token</span> <span class="o">=</span> <span class="s">&quot;9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b&quot;</span>
+<span class="n">project_id</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">object_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">42</span><span class="p">]</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="s">&#39;https://localhost/{}/annotations/query&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
+        <span class="n">auth</span><span class="o">=</span><span class="n">CatmaidApiTokenAuth</span><span class="p">(</span><span class="n">token</span><span class="p">),</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;object_ids[]&#39;</span><span class="p">:</span> <span class="n">object_ids</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="other-api-clients">
+<h2>Other API Clients<a class="headerlink" href="#other-api-clients" title="Permalink to this headline">¶</a></h2>
+<p>A partial listing of libraries or programs that consume the CATMAID HTTP API:</p>
+<dl class="docutils">
+<dt><a class="reference external" href="https://github.com/jefferis/rcatmaid">RCATMAID</a></dt>
+<dd>R bindings for the CATMAID API by
+<a class="reference external" href="http://www2.mrc-lmb.cam.ac.uk/group-leaders/h-to-m/gregory-jefferis/">Gregory Jefferis</a>.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo" src="_static/catmaidlogo.png" alt="Logo" align="left"/>
+</a></p>
+<br clear="all"/><br /><h3><a href="index.html">Home</a></h3>
+<h3><a href="screenshots.html">Screenshots</a></h3>
+<h3><a href="whouses.html">Who uses it?</a></h3>
+<h3><a href="publications.html">Publications</a></h3>
+<h3><a href="funding.html">Funding</a></h3>
+<h3><a href="credits.html">Credits</a></h3>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/catmaid/CATMAID">Source Code</a></li>
+  <li><a href="http://github.com/catmaid/CATMAID/issues">Issues</a></li>
+  <li><a href="http://groups.google.com/group/CATMAID">Mailinglist</a></li>
+  <li><a href="http://fly.mpi-cbg.de/~saalfeld/catmaid/">Old page</a></li>
+</ul>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17713054-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using the CATMAID API</a><ul>
+<li><a class="reference internal" href="#api-documentation">API Documentation</a></li>
+<li><a class="reference internal" href="#undocumented-api">Undocumented API</a></li>
+<li><a class="reference internal" href="#api-token">API Token</a></li>
+<li><a class="reference internal" href="#example-api-use">Example API Use</a></li>
+<li><a class="reference internal" href="#other-api-clients">Other API Clients</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation</a><ul>
+  <li><a href="user.html">User Documentation</a><ul>
+      <li>Previous: <a href="tracing_neurons.html" title="previous chapter">Instructions for Tracing Neurons</a></li>
+      <li>Next: <a href="user_faq.html" title="next chapter">Frequently Asked (User) Questions</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2015, CATMAID Developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
