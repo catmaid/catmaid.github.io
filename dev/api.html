@@ -127,11 +127,13 @@ open the CATMAID client in your browser, hover your cursor over your name
 </div>
 <p>As a security measure, you will be prompted to re-enter your password,
 then shown your token string.</p>
-<p>To use the API token, set the HTTP <code class="docutils literal"><span class="pre">Authorization</span></code> header on all of your
+<p>To use the API token, set the HTTP <code class="docutils literal"><span class="pre">X-Authorization</span></code> header on all of your
 API requests to be &#8220;Token&#8221;, a space, and the token string, e.g.:</p>
-<div class="highlight-python"><div class="highlight"><pre>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+<div class="highlight-python"><div class="highlight"><pre>X-Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 </pre></div>
 </div>
+<p>CATMAID uses <code class="docutils literal"><span class="pre">X-Authorization</span></code> rather than <code class="docutils literal"><span class="pre">Authorization</span></code> so that it
+does not conflict with server-level HTTP authorization.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">Requests using your token can do anything your account can do, so
@@ -146,12 +148,12 @@ running on <code class="docutils literal"><span class="pre">localhost</span></co
 <span class="kn">from</span> <span class="nn">requests.auth</span> <span class="kn">import</span> <span class="n">AuthBase</span>
 
 <span class="k">class</span> <span class="nc">CatmaidApiTokenAuth</span><span class="p">(</span><span class="n">AuthBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Attaches HTTP Authorization Token headers to the given Request.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Attaches HTTP X-Authorization Token headers to the given Request.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
 
     <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
-        <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Token {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">&#39;X-Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;Token {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">r</span>
 
 <span class="c"># Replace these fake values with your own.</span>
