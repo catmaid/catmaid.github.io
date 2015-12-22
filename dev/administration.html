@@ -241,7 +241,7 @@ also possible (and advisable) to automate this with by setting <code class="docu
 Django expects the following parameters for its database connections:
 <code class="docutils literal"><span class="pre">client_encoding:</span> <span class="pre">'UTF8'</span></code>,  <code class="docutils literal"><span class="pre">default_transaction_isolation:</span> <span class="pre">'read</span> <span class="pre">committed'</span></code>
 and <code class="docutils literal"><span class="pre">timezone:</span> <span class="pre">'UTC'</span></code> when <code class="docutils literal"><span class="pre">USE_TZ</span></code> is True, value of <code class="docutils literal"><span class="pre">TIME_ZONE</span></code>
-otherwise (use of <code class="docutils literal"><span class="pre">TIME_ZONE</span></code> is CATMAID&#8217;s default). All of these settings
+otherwise (<code class="docutils literal"><span class="pre">USE_TZ</span></code> is CATMAID&#8217;s default). All of these settings
 can be configured in <code class="docutils literal"><span class="pre">postgresql.conf</span></code> or more conveniently per database
 user with <a class="reference external" href="http://www.postgresql.org/docs/current/interactive/sql-alterrole.html">ALTER ROLE</a>.
 If these parameters are not the default, Django will do some additional
