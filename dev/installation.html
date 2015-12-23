@@ -161,9 +161,9 @@ shells, for example, you will need to activate it by running:</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>On Ubuntu versions before 14.04 a rather old version of Pip is shipped.
-This is the tool we use to install Python packages within the virtualenv, so
-let&#8217;s update it first:</p>
+<p>Many distributions ship with an outdated version of Pip.
+This is the tool we use to install Python packages within the virtualenv,
+so let&#8217;s update it first:</p>
 <div class="last highlight-python"><div class="highlight"><pre>python -m pip install -U pip
 </pre></div>
 </div>
@@ -221,14 +221,22 @@ user with, for example:</p>
 </div>
 <p>Besides createing the database and the database user, it will also enable a
 required Postgres extension, called <code class="docutils literal"><span class="pre">postgis</span></code>. You should now be able to
-access the database and see that it is currently empty, e.g.:</p>
+access the database and see that it is currently empty except for PostGIS
+relations, e.g.:</p>
 <div class="highlight-python"><div class="highlight"><pre>psql -U catmaid_user catmaid
 Password:
 psql (9.3.4)
 Type &quot;help&quot; for help.
 
 catmaid=&gt; \d
-No relations found.
+         List of relations
+ Schema |       Name        | Type  |  Owner
+--------+-------------------+-------+----------
+ public | geography_columns | view  | postgres
+ public | geometry_columns  | view  | postgres
+ public | raster_columns    | view  | postgres
+ public | raster_overviews  | view  | postgres
+ public | spatial_ref_sys   | table | postgres
 </pre></div>
 </div>
 </div>
