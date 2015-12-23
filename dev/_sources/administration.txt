@@ -45,7 +45,6 @@ Update Python packages::
 
 Synchronize the Django environment with the database::
 
-   ./projects/mysite/manage.py syncdb
    ./projects/mysite/manage.py migrate
 
 Collect new and changed static files::
@@ -62,6 +61,14 @@ clone the virtualenv by calling::
 
    Updating PostGIS on your host system could cause CATMAID to stop working. See
    :ref:`here <faq-postgis-update-problems>` for how to fix this.
+
+.. note::
+
+   Updating from a CATMAID release before 2015.12.21 (with applied database
+   migrations) requires to update to release 2015.12.21 first, apply all
+   database migrations and then continue with the release you actually want.
+   With the newer version, you have to then fake the initial migration:
+   ``manage.py migrate catmaid --fake 0001_initial``.
 
 Backup an restore the database
 ------------------------------
@@ -206,7 +213,7 @@ Database management system
   Django expects the following parameters for its database connections:
   ``client_encoding: 'UTF8'``,  ``default_transaction_isolation: 'read committed'``
   and ``timezone: 'UTC'`` when ``USE_TZ`` is True, value of ``TIME_ZONE``
-  otherwise (``USE_TZ`` is CATMAID's default). All of these settings
+  otherwise (use of ``TIME_ZONE`` is CATMAID's default). All of these settings
   can be configured in ``postgresql.conf`` or more conveniently per database
   user with `ALTER ROLE <http://www.postgresql.org/docs/current/interactive/sql-alterrole.html>`_.
   If these parameters are not the default, Django will do some additional
