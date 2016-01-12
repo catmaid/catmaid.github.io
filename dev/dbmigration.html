@@ -103,12 +103,12 @@ where the <code class="docutils literal"><span class="pre">manage.py</span></cod
 <div class="section" id="checking-for-new-migrations-and-applying-them">
 <h2>Checking for new migrations and applying them<a class="headerlink" href="#checking-for-new-migrations-and-applying-them" title="Permalink to this headline">¶</a></h2>
 <p>To check if there are new migrations that need to be applied, run:</p>
-<div class="highlight-python"><div class="highlight"><pre>./manage.py migrate --list
+<div class="highlight-python"><div class="highlight"><pre>./manage.py showmigrations
 </pre></div>
 </div>
 <p>CATMAID utilizes two other applications that use South as well: guardian and
 djcelery. If you want to refer only to CATMAID, do:</p>
-<div class="highlight-python"><div class="highlight"><pre>./manage.py migrate catmaid --list
+<div class="highlight-python"><div class="highlight"><pre>./manage.py showmigrations catmaid
 </pre></div>
 </div>
 <p>If there is no migration that has not been applied, you will see a list like the
