@@ -265,8 +265,12 @@ instructions assume that you&#8217;ve changed into that directory:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">alice</span><span class="o">/</span><span class="n">catmaid</span><span class="o">/</span><span class="n">django</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">mysite</span>
 </pre></div>
 </div>
-<p>Now create all required tables and bring the database schema up to date
-for applications that mange changes to their tables with South:</p>
+<p>Now create some required tables with:</p>
+<div class="highlight-python"><div class="highlight"><pre>./manage.py syncdb
+</pre></div>
+</div>
+<p>And bring the database schema up to date for applications that
+mange changes to their tables with South:</p>
 <div class="highlight-python"><div class="highlight"><pre>./manage.py migrate
 </pre></div>
 </div>

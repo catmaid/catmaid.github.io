@@ -57,12 +57,12 @@ Checking for new migrations and applying them
 
 To check if there are new migrations that need to be applied, run::
 
-    ./manage.py showmigrations
+    ./manage.py migrate --list
 
 CATMAID utilizes two other applications that use South as well: guardian and
 djcelery. If you want to refer only to CATMAID, do::
 
-    ./manage.py showmigrations catmaid
+    ./manage.py migrate catmaid --list
 
 If there is no migration that has not been applied, you will see a list like the
 following::
