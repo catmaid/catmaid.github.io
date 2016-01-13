@@ -95,8 +95,7 @@ origin&#8217;s master branch. Then, move into the Django sub-directory:</p>
 </pre></div>
 </div>
 <p>Synchronize the Django environment with the database:</p>
-<div class="highlight-python"><div class="highlight"><pre>./projects/mysite/manage.py syncdb
-./projects/mysite/manage.py migrate
+<div class="highlight-python"><div class="highlight"><pre>./projects/mysite/manage.py migrate
 </pre></div>
 </div>
 <p>Collect new and changed static files:</p>
@@ -113,6 +112,14 @@ clone the virtualenv by calling:</p>
 <p class="first admonition-title">Note</p>
 <p class="last">Updating PostGIS on your host system could cause CATMAID to stop working. See
 <a class="reference internal" href="admin_faq.html#faq-postgis-update-problems"><span>here</span></a> for how to fix this.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Updating from a CATMAID release before 2015.12.21 (with applied database
+migrations) requires to update to release 2015.12.21 first, apply all
+database migrations and then continue with the release you actually want.
+With the newer version, you have to then fake the initial migration:
+<code class="docutils literal"><span class="pre">manage.py</span> <span class="pre">migrate</span> <span class="pre">catmaid</span> <span class="pre">--fake</span> <span class="pre">0001_initial</span></code>.</p>
 </div>
 </div>
 <div class="section" id="backup-an-restore-the-database">
@@ -241,7 +248,7 @@ also possible (and advisable) to automate this with by setting <code class="docu
 Django expects the following parameters for its database connections:
 <code class="docutils literal"><span class="pre">client_encoding:</span> <span class="pre">'UTF8'</span></code>,  <code class="docutils literal"><span class="pre">default_transaction_isolation:</span> <span class="pre">'read</span> <span class="pre">committed'</span></code>
 and <code class="docutils literal"><span class="pre">timezone:</span> <span class="pre">'UTC'</span></code> when <code class="docutils literal"><span class="pre">USE_TZ</span></code> is True, value of <code class="docutils literal"><span class="pre">TIME_ZONE</span></code>
-otherwise (use of <code class="docutils literal"><span class="pre">TIME_ZONE</span></code> is CATMAID&#8217;s default). All of these settings
+otherwise (<code class="docutils literal"><span class="pre">USE_TZ</span></code> is CATMAID&#8217;s default). All of these settings
 can be configured in <code class="docutils literal"><span class="pre">postgresql.conf</span></code> or more conveniently per database
 user with <a class="reference external" href="http://www.postgresql.org/docs/current/interactive/sql-alterrole.html">ALTER ROLE</a>.
 If these parameters are not the default, Django will do some additional
