@@ -107,9 +107,9 @@ this is fine for a small and simple setup, it is recommended to use a
 different message broker for larger setups. There is more information on
 the limitations of and alternatives to this approach in
 <a class="reference external" href="http://docs.celeryproject.org/en/latest/getting-started/brokers/django.html">Celery&#8217;s documentation</a>.</p>
-<p>To initialize Celery, call the syncdb sub-command of your <code class="docutils literal"><span class="pre">manage.py</span></code>
+<p>To initialize Celery, call the migrate command of your <code class="docutils literal"><span class="pre">manage.py</span></code>
 (from within the virtualenv):</p>
-<div class="highlight-python"><div class="highlight"><pre>python manage.py syncdb
+<div class="highlight-python"><div class="highlight"><pre>python manage.py migrate
 </pre></div>
 </div>
 <p>This will create some tables for Celery and django-kumbo in the Django
