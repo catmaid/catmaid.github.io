@@ -286,6 +286,27 @@ types.</p>
 </div>
 </div></blockquote>
 </div>
+<div class="section" id="flixserver-tiles">
+<h3>9. FlixServer tiles<a class="headerlink" href="#flixserver-tiles" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>This type supports loading tiles from a
+<a href="#id3"><span class="problematic" id="id4">`FlixServer &lt;https://github.com/fzadow/tileserver/`_</span></a> instance. This tile
+server generates images dynamically and supports CATMAID&#8217;s default tile
+source URL format:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;sourceBaseUrl&gt;&lt;pixelPosition.z&gt;/&lt;row&gt;_&lt;col&gt;_&lt;zoomLevel&gt;.&lt;fileExtension&gt;
+</pre></div>
+</div>
+<p>Additional GET parameters can be used to adjust color, dynamic range and
+gamma mapping:</p>
+<div class="highlight-python"><div class="highlight"><pre>color = (red,green|blue|cyan|magenta|yellow|white) for coloring
+min/max = [0, 2^16] for specifying the dynamic range
+gamma = [0, 2^16] for the exponent of a non-linear mapping
+</pre></div>
+</div>
+<p>For multi-channel images, a comma separated list can be used as parameter
+value (e.g. color=cyan,magenta).</p>
+</div></blockquote>
+</div>
 </div>
 <div class="section" id="backend-representation">
 <h2>Backend Representation<a class="headerlink" href="#backend-representation" title="Permalink to this headline">¶</a></h2>
@@ -360,6 +381,7 @@ in <code class="docutils literal"><span class="pre">CATMAID.getTileSource</span>
 <li><a class="reference internal" href="#dvid-imageblk-voxels">6. DVID <code class="docutils literal"><span class="pre">imageblk</span></code> voxels</a></li>
 <li><a class="reference internal" href="#render-service">7. Render service</a></li>
 <li><a class="reference internal" href="#dvid-imagetile-tiles">8. DVID <code class="docutils literal"><span class="pre">imagetile</span></code> tiles</a></li>
+<li><a class="reference internal" href="#flixserver-tiles">9. FlixServer tiles</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#backend-representation">Backend Representation</a></li>
