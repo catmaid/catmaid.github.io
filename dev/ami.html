@@ -103,14 +103,11 @@ code, you should switch to that user:</p>
 <h2>Server Configuration<a class="headerlink" href="#server-configuration" title="Permalink to this headline">¶</a></h2>
 <p>The AMI is configured to use Nginx + Gunicorn; by default it is
 configured to use 4 synchronous worker threads, which can be
-changed in <code class="docutils literal"><span class="pre">/etc/init/gunicorn-catmaid.conf</span></code>.  (You can
+changed in <code class="docutils literal"><span class="pre">/etc/init/gunicorn-catmaid.conf</span></code>.  You can
 restart Gunicorn with:</p>
 <div class="highlight-python"><div class="highlight"><pre>sudo initctl restart gunicorn-catmaid
 </pre></div>
 </div>
-<p>(We are not sure, at the moment, whether using gevent-based
-greenlet worker threads is safe to use with CATMAID&#8217;s current
-&#8220;database transaction per HTTP request&#8221; model.)</p>
 </div>
 </div>
 
