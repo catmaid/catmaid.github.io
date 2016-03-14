@@ -203,7 +203,8 @@ even less). You  can check this kernel setting with <code class="docutils litera
 The default for most distributions is in the range of kilobytes and megabytes.</li>
 <li>The partition that is hosting the image tiles should be mounted with the
 <code class="docutils literal"><span class="pre">noatime</span></code> option. This makes sure no access time is written every time an
-image file is read.</li>
+image file is read. Alternatively, you can use <code class="docutils literal"><span class="pre">chattr</span></code> to set this option
+for individual files and folders.</li>
 <li>If LDAP is used to authenticate users and to check permissions on the server
 CATMAID is running or the image data is loaded from, LDAP queries should be
 cached locally. Otherwise, an LDAP request will be made every time a file is
