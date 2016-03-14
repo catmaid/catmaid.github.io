@@ -351,6 +351,38 @@ example, with the default configuration this would be:</p>
 </pre></div>
 </div>
 </div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<p>In addition to the backend, HTTP API, and frontend documentation mentioned
+above, CATMAID provides a general documentation manual for users,
+administrators, and developers (including this page) and in-client
+documentation for keyboard shortcuts and widget help.</p>
+<div class="section" id="general-documentation">
+<h3>General Documentation<a class="headerlink" href="#general-documentation" title="Permalink to this headline">¶</a></h3>
+<p>General documentation is part of the CATMAID repository under the <code class="docutils literal"><span class="pre">sphinx-doc</span></code>
+folder. This documentation is written in <a class="reference external" href="http://www.sphinx-doc.org/">Sphinx</a>
+ReStructured Text. Documentation from commits pushed to the official CATMAID
+repository are built by <a class="reference external" href="https://readthedocs.org/">Read the Docs</a> and hosted
+at <a class="reference external" href="http://catmaid.org">catmaid.org</a>.</p>
+<p>To build the general documentation from within your pip virtualenv, run:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd sphinx-doc
+make html
+</pre></div>
+</div>
+<p>The built documentation is now in <code class="docutils literal"><span class="pre">sphinx-doc/build/html/index.html</span></code>.</p>
+</div>
+<div class="section" id="in-client-documentation">
+<h3>In-Client Documentation<a class="headerlink" href="#in-client-documentation" title="Permalink to this headline">¶</a></h3>
+<p>Documentation is provided from within the web client through tool-scoped mouse
+and keyboard shortcut documentation (accessed by pressing <code class="kbd docutils literal"><span class="pre">F1</span></code>) and
+per-widget help accessible through the question mark icon in the title bar of
+some widgets.</p>
+<p>If you find that widget help documentation is missing, incomplete, confusing,
+or incorrect, you can contribute better documentation by
+<a class="reference external" href="https://github.com/catmaid/CATMAID/issues/new">creating an issue on GitHub</a>
+or editing the <code class="docutils literal"><span class="pre">helpText</span></code> property of the widget and creating a pull request.</p>
+</div>
+</div>
 </div>
 
 
@@ -406,6 +438,11 @@ example, with the default configuration this would be:</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#linting-and-testing">Linting and Testing</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li><a class="reference internal" href="#general-documentation">General Documentation</a></li>
+<li><a class="reference internal" href="#in-client-documentation">In-Client Documentation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
