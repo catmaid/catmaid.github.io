@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Models, State and Commands &mdash; CATMAID 2015.12.21-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2015.12.21-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="CATMAID 2015.12.21-dev documentation" href="index.html" />
+    <link rel="up" title="Developer Documentation" href="developer.html" />
+    <link rel="next" title="Creating a CATMAID Instance on EC2" href="ami.html" />
+    <link rel="prev" title="Django Unit Tests for CATMAID" href="djangounittest.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ami.html" title="Creating a CATMAID Instance on EC2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="djangounittest.html" title="Django Unit Tests for CATMAID"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2015.12.21-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="developer.html" accesskey="U">Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="models-state-and-commands">
+<span id="commands"></span><span id="state"></span><span id="models"></span><h1>Models, State and Commands<a class="headerlink" href="#models-state-and-commands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Models<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>To talk to CATMAID&#8217;s back-end, its <a class="reference internal" href="api.html#api"><span>API</span></a> is used. To make this more
+convenient and provide extra functionality, some of these APIs are abstracted
+into front-end models, which are defined in the JavaScript files in the
+<code class="docutils literal"><span class="pre">models</span></code> sub-folder of the CATMAID library:</p>
+<div class="highlight-python"><div class="highlight"><pre>django/applications/catmaid/static/lib/catmaid/models/
+</pre></div>
+</div>
+<p>The majority of the common front-end operations can be found in there. A typical
+function, like node creation, has a signature like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>CATMAID.Neurons.create: function(state, projectId, x, y, z, parentId, radius,
+    confidence, useNeuron, neuronName)
+</pre></div>
+</div>
+<p>All back-end parameters are available plus a state object. This state is
+required as a safety measure to not accidentally change data that was already
+updated by someone else. The next section goes into more detail about that.</p>
+</div>
+<div class="section" id="id2">
+<h2>State<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>In a collaborative environment, clients can never be sure if the information
+they see is the most recent one. Therefore, some CATMAID APIs support state
+checks to prevent changes by a client that was not aware of changes done by
+another client. Such a state is sent along with the request created by our
+front-end models and consists of information about the node of interest and its
+neighborhood.</p>
+<p>To represent the (local) state the client sees the world in, the state
+generating functions are used. There is a <em>node state</em>,  a <em>parent state</em>, an
+<em>edge state</em> and a <em>neighborhood state</em>. The first three are subsets of the last
+one. A node state represents a node ID along with an edition time, a parent
+state encapsulates this information about a parent of a node. An edge state
+includes a parent state and a child state. The neighborhoods state includes
+both, plus information about children and links, both again represented by an ID
+and an edition time. Then there is also a <em>no chack state</em>, which causes the
+back-end to disable state checking for a request.</p>
+<p>Different actions require different states, below you find a list of stateful
+endpoints and what they expect. This list isn&#8217;t complete yet, some functions
+don&#8217;t support state checks, yet.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Required state</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Delete node</td>
+<td>Neighborhood state for deleted node</td>
+</tr>
+<tr class="row-odd"><td>Create node</td>
+<td>Parent state for new node</td>
+</tr>
+<tr class="row-even"><td>Insert node</td>
+<td>Edge state</td>
+</tr>
+<tr class="row-odd"><td>Move node</td>
+<td>Node state</td>
+</tr>
+<tr class="row-even"><td>Edit node radius</td>
+<td>Node state</td>
+</tr>
+<tr class="row-odd"><td>Edit node confidence</td>
+<td>Node state</td>
+</tr>
+<tr class="row-even"><td>Create connector</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td>Delete connector</td>
+<td>Connector state</td>
+</tr>
+<tr class="row-even"><td>Update connector confidence</td>
+<td>Connector state</td>
+</tr>
+<tr class="row-odd"><td>Update connector links</td>
+<td>Connector and link state</td>
+</tr>
+<tr class="row-even"><td>Create/update/remove annotation</td>
+<td>Node state</td>
+</tr>
+<tr class="row-odd"><td>Create/update/remove tag</td>
+<td>Node state</td>
+</tr>
+<tr class="row-even"><td>Change neuron name</td>
+<td>Neuron state</td>
+</tr>
+<tr class="row-odd"><td>Link connector</td>
+<td>Node neighborhood and connector state</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="undo">
+<h2>Undo<a class="headerlink" href="#undo" title="Permalink to this headline">¶</a></h2>
+<p>Some of the user user actions are reversible, they can be undone and redone.
+Undoing a command is as simple as pressing <code class="docutils literal"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">Z</span></code>. Alternatively, the
+history dialog accessible through the <code class="docutils literal"><span class="pre">F9</span></code> key can be used, where a redo can
+be issued as well. Actions that can be undone are listed below and CATMAID wraps
+these in so called <em>commands</em>. These maintain information about the applied
+changes and their inverse. This is a list of currently available commands and
+what their inverse operation is:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Inverse</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Delete node</td>
+<td>Create node</td>
+</tr>
+<tr class="row-odd"><td>Create node</td>
+<td>Delete node</td>
+</tr>
+<tr class="row-even"><td>Insert node</td>
+<td>Delete node</td>
+</tr>
+<tr class="row-odd"><td>Move node</td>
+<td>Move node back</td>
+</tr>
+<tr class="row-even"><td>Edit node radius</td>
+<td>Set original radius</td>
+</tr>
+<tr class="row-odd"><td>Edit node confidence</td>
+<td>Set original confidence</td>
+</tr>
+<tr class="row-even"><td>Create connector</td>
+<td>Delete connector</td>
+</tr>
+<tr class="row-odd"><td>Delete connector</td>
+<td>Create connector and links</td>
+</tr>
+<tr class="row-even"><td>Update connector confidence</td>
+<td>Set original confidence</td>
+</tr>
+<tr class="row-odd"><td>Update connector links</td>
+<td>Restore original links</td>
+</tr>
+<tr class="row-even"><td>Create/update/remove annotation</td>
+<td>Delete/reset/create annotation</td>
+</tr>
+<tr class="row-odd"><td>Create/update/remove tag</td>
+<td>Delete/reset/create tag</td>
+</tr>
+<tr class="row-even"><td>Change neuron name</td>
+<td>Set original name</td>
+</tr>
+<tr class="row-odd"><td>Link connector</td>
+<td>Unklink connector</td>
+</tr>
+</tbody>
+</table>
+<p>Commands are typically defined in the same file as the model functions they
+wrap.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo" src="_static/catmaidlogo.png" alt="Logo" align="left"/>
+</a></p>
+<br clear="all"/><br /><h3><a href="index.html">Home</a></h3>
+<h3><a href="screenshots.html">Screenshots</a></h3>
+<h3><a href="whouses.html">Who uses it?</a></h3>
+<h3><a href="publications.html">Publications</a></h3>
+<h3><a href="funding.html">Funding</a></h3>
+<h3><a href="credits.html">Credits</a></h3>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/catmaid/CATMAID">Source Code</a></li>
+  <li><a href="http://github.com/catmaid/CATMAID/issues">Issues</a></li>
+  <li><a href="http://groups.google.com/group/CATMAID">Mailinglist</a></li>
+  <li><a href="http://fly.mpi-cbg.de/~saalfeld/catmaid/">Old page</a></li>
+</ul>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17713054-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Models, State and Commands</a><ul>
+<li><a class="reference internal" href="#id1">Models</a></li>
+<li><a class="reference internal" href="#id2">State</a></li>
+<li><a class="reference internal" href="#undo">Undo</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation</a><ul>
+  <li><a href="developer.html">Developer Documentation</a><ul>
+      <li>Previous: <a href="djangounittest.html" title="previous chapter">Django Unit Tests for CATMAID</a></li>
+      <li>Next: <a href="ami.html" title="next chapter">Creating a CATMAID Instance on EC2</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2016, CATMAID Developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
