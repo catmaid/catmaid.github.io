@@ -84,22 +84,26 @@ checks to prevent changes by a client that was not aware of changes done by
 another client. Such a state is sent along with the request created by our
 front-end models and consists of information about the node of interest and its
 neighborhood.</p>
-<p>To represent the (local) state the client sees the world in, the state
-generating functions are used. There is a <em>node state</em>,  a <em>parent state</em>, an
-<em>edge state</em> and a <em>neighborhood state</em>. The first three are subsets of the last
-one. A node state represents a node ID along with an edition time, a parent
-state encapsulates this information about a parent of a node. An edge state
-includes a parent state and a child state. The neighborhoods state includes
-both, plus information about children and links, both again represented by an ID
-and an edition time. Then there is also a <em>no chack state</em>, which causes the
-back-end to disable state checking for a request.</p>
+<p>To represent the (local) state the client sees the world in, different state
+implementations can be used. The tracing layer, for instance, has its own
+implementation and undo/redo utilizes a much sparser representation. States
+provide access to nodes, their state information and special serialization
+methods. State information on various parts of a local node neighborhood can be
+represented in parallel. This allows for flexibility and granular access
+control. Information on individual nodes, their parents, children and links can
+be stored. Connectors are supported as well.</p>
+<p>A complete node <em>neighborhood state</em> consists of the <em>node</em>, <em>children</em>,
+<em>parent</em> and <em>links</em>. A node state represents a node ID along with an edition
+time, a parent state encapsulates this information about a parent of a node.
+Then there is also a <em>no chack state</em>, which causes the back-end to disable
+state checking for a request.</p>
 <p>Different actions require different states, below you find a list of stateful
 endpoints and what they expect. This list isn&#8217;t complete yet, some functions
 don&#8217;t support state checks, yet.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="46%" />
-<col width="54%" />
+<col width="39%" />
+<col width="61%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Operation</th>
@@ -108,13 +112,13 @@ don&#8217;t support state checks, yet.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Delete node</td>
-<td>Neighborhood state for deleted node</td>
+<td>Neighborhood state for node to node</td>
 </tr>
 <tr class="row-odd"><td>Create node</td>
-<td>Parent state for new node</td>
+<td>Parent state for node append, else none</td>
 </tr>
 <tr class="row-even"><td>Insert node</td>
-<td>Edge state</td>
+<td>Node state and children of edge</td>
 </tr>
 <tr class="row-odd"><td>Move node</td>
 <td>Node state</td>
@@ -126,16 +130,13 @@ don&#8217;t support state checks, yet.</p>
 <td>Node state</td>
 </tr>
 <tr class="row-even"><td>Create connector</td>
-<td><ul class="first last simple">
-<li></li>
-</ul>
-</td>
+<td>For initial links partner node states, else none</td>
 </tr>
 <tr class="row-odd"><td>Delete connector</td>
-<td>Connector state</td>
+<td>Connector neighborhood state</td>
 </tr>
 <tr class="row-even"><td>Update connector confidence</td>
-<td>Connector state</td>
+<td>Connector node state</td>
 </tr>
 <tr class="row-odd"><td>Update connector links</td>
 <td>Connector and link state</td>
@@ -162,11 +163,11 @@ don&#8217;t support state checks, yet.</p>
 <h2>Undo<a class="headerlink" href="#undo" title="Permalink to this headline">¶</a></h2>
 <p>Some of the user user actions are reversible, they can be undone and redone.
 Undoing a command is as simple as pressing <code class="docutils literal"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">Z</span></code>. Alternatively, the
-history dialog accessible through the <code class="docutils literal"><span class="pre">F9</span></code> key can be used, where a redo can
-be issued as well. Actions that can be undone are listed below and CATMAID wraps
-these in so called <em>commands</em>. These maintain information about the applied
-changes and their inverse. This is a list of currently available commands and
-what their inverse operation is:</p>
+history dialog accessible through the <code class="docutils literal"><span class="pre">F9</span></code> key can be used, where redo can
+be selected as well. Actions that can be undone are listed below and CATMAID
+wraps these in so called <em>commands</em>. These maintain information about the
+applied changes and their inverse. This is a list of currently available
+commands and what their inverse operation is:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="46%" />
@@ -179,7 +180,7 @@ what their inverse operation is:</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Delete node</td>
-<td>Create node</td>
+<td>Create node, along with connectors</td>
 </tr>
 <tr class="row-odd"><td>Create node</td>
 <td>Delete node</td>
@@ -220,8 +221,17 @@ what their inverse operation is:</p>
 <tr class="row-odd"><td>Link connector</td>
 <td>Unklink connector</td>
 </tr>
+<tr class="row-even"><td>Split skeleton</td>
+<td><em>Block undo</em></td>
+</tr>
+<tr class="row-odd"><td>Join skeletons</td>
+<td><em>Block undo</em></td>
+</tr>
 </tbody>
 </table>
+<p>Splitting and joining skeletons results at the moment in undo being blocked for
+this point in history. That is, commands executed before splitting or joining,
+can&#8217;t be undone for now.</p>
 <p>Commands are typically defined in the same file as the model functions they
 wrap.</p>
 </div>
