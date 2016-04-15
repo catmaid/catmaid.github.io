@@ -171,7 +171,7 @@ and <cite>day of week</cite> with asterisks meaning <cite>any</cite>. For more i
 manual pages of <code class="docutils literal"><span class="pre">cron</span></code> and <code class="docutils literal"><span class="pre">crontab</span></code>. Because this command is run as <cite>root</cite>
 and the actual <code class="docutils literal"><span class="pre">pg_dump</span></code> call is executed as <cite>postgres</cite> user with the help of
 <code class="docutils literal"><span class="pre">sudo</span></code>, no database password is required. If your actual backup command gets
-more complicated than this, it is recommendet to create a script file and call
+more complicated than this, it is recommended to create a script file and call
 this from cron.</p>
 </div>
 <div class="section" id="adding-custom-code">
@@ -195,8 +195,8 @@ balancer, a WSGI server to run the Python back-end and a PostgreSQL database
 server. The configuration of all of them can be optimized to experience better
 performance. The following list of suggestions is not exhaustive and if you have
 suggestions we are happy to hear about them.</p>
-<div class="section" id="operationg-system-and-infrastructure">
-<h3>Operationg system and infrastructure<a class="headerlink" href="#operationg-system-and-infrastructure" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="operating-system-and-infrastructure">
+<h3>Operating system and infrastructure<a class="headerlink" href="#operating-system-and-infrastructure" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>In conjunction with the shared memory setting of PostgreSQL (see below), one
 should increase the kernel&#8217;s shared memory limit. It defines how much memory
@@ -230,7 +230,9 @@ can be answered more quickly and CATMAID will feel more responsive.</li>
 <li>A cache server like Varnish can be beneficial on the machine that serves the
 image data. If multiple users load the same image data, it will reduce the
 number of times image data has to be loaded from the hard drive.</li>
-<li>Have the webserver transfer data with GZIP.</li>
+<li>Have the webserver transfer data with GZIP. Make sure this includes JSON
+data with the content-type <cite>application/json</cite>. In nginx, you can include
+this by adding <cite>application/json</cite> to the <cite>gzip_types</cite> setting.</li>
 <li>The webserver should mark image tiles to not expire so that they can be cached
 by a client. If the image data is public, one could let the webserver also set
 the <code class="docutils literal"><span class="pre">Cache-Control:</span> <span class="pre">public</span></code> header for the images.</li>
@@ -379,7 +381,7 @@ server.</p>
 <li><a class="reference internal" href="#backup-an-restore-the-database">Backup an restore the database</a></li>
 <li><a class="reference internal" href="#adding-custom-code">Adding custom code</a></li>
 <li><a class="reference internal" href="#id1">Performance tuning</a><ul>
-<li><a class="reference internal" href="#operationg-system-and-infrastructure">Operationg system and infrastructure</a></li>
+<li><a class="reference internal" href="#operating-system-and-infrastructure">Operating system and infrastructure</a></li>
 <li><a class="reference internal" href="#webserver">Webserver</a></li>
 <li><a class="reference internal" href="#database-management-system">Database management system</a></li>
 <li><a class="reference internal" href="#catmaid">CATMAID</a></li>
