@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Administering a CATMAID Instance &mdash; CATMAID 2015.12.21-dev documentation</title>
+    <title>Administering a CATMAID Instance &mdash; CATMAID 2016.04.15 documentation</title>
     
     <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2015.12.21-dev',
+        VERSION:     '2016.04.15',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="CATMAID 2015.12.21-dev documentation" href="index.html" />
+    <link rel="top" title="CATMAID 2016.04.15 documentation" href="index.html" />
     <link rel="up" title="Administrator Documentation" href="administrator.html" />
     <link rel="next" title="Trying CATMAID with Docker" href="docker.html" />
     <link rel="prev" title="Basic Installation Instructions" href="installation.html" /> 
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="installation.html" title="Basic Installation Instructions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2015.12.21-dev documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.04.15 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="administrator.html" accesskey="U">Administrator Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -171,7 +171,7 @@ and <cite>day of week</cite> with asterisks meaning <cite>any</cite>. For more i
 manual pages of <code class="docutils literal"><span class="pre">cron</span></code> and <code class="docutils literal"><span class="pre">crontab</span></code>. Because this command is run as <cite>root</cite>
 and the actual <code class="docutils literal"><span class="pre">pg_dump</span></code> call is executed as <cite>postgres</cite> user with the help of
 <code class="docutils literal"><span class="pre">sudo</span></code>, no database password is required. If your actual backup command gets
-more complicated than this, it is recommendet to create a script file and call
+more complicated than this, it is recommended to create a script file and call
 this from cron.</p>
 </div>
 <div class="section" id="adding-custom-code">
@@ -195,8 +195,8 @@ balancer, a WSGI server to run the Python back-end and a PostgreSQL database
 server. The configuration of all of them can be optimized to experience better
 performance. The following list of suggestions is not exhaustive and if you have
 suggestions we are happy to hear about them.</p>
-<div class="section" id="operationg-system-and-infrastructure">
-<h3>Operationg system and infrastructure<a class="headerlink" href="#operationg-system-and-infrastructure" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="operating-system-and-infrastructure">
+<h3>Operating system and infrastructure<a class="headerlink" href="#operating-system-and-infrastructure" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>In conjunction with the shared memory setting of PostgreSQL (see below), one
 should increase the kernel&#8217;s shared memory limit. It defines how much memory
@@ -381,7 +381,7 @@ server.</p>
 <li><a class="reference internal" href="#backup-an-restore-the-database">Backup an restore the database</a></li>
 <li><a class="reference internal" href="#adding-custom-code">Adding custom code</a></li>
 <li><a class="reference internal" href="#id1">Performance tuning</a><ul>
-<li><a class="reference internal" href="#operationg-system-and-infrastructure">Operationg system and infrastructure</a></li>
+<li><a class="reference internal" href="#operating-system-and-infrastructure">Operating system and infrastructure</a></li>
 <li><a class="reference internal" href="#webserver">Webserver</a></li>
 <li><a class="reference internal" href="#database-management-system">Database management system</a></li>
 <li><a class="reference internal" href="#catmaid">CATMAID</a></li>
