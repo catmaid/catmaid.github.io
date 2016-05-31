@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Exporting and Importing Data &mdash; CATMAID 2016.04.18-dev documentation</title>
+    <title>Exporting and Importing Data &mdash; CATMAID 2016.05.26-dev documentation</title>
     
     <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2016.04.18-dev',
+        VERSION:     '2016.05.26-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="CATMAID 2016.04.18-dev documentation" href="index.html" />
+    <link rel="top" title="CATMAID 2016.05.26-dev documentation" href="index.html" />
     <link rel="up" title="User Documentation" href="user.html" />
     <link rel="next" title="Using Data Views" href="data_views.html" />
     <link rel="prev" title="Frequently Asked (User) Questions" href="user_faq.html" /> 
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="user_faq.html" title="Frequently Asked (User) Questions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.04.18-dev documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.05.26-dev documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -182,12 +182,22 @@ file and could look like this for the example above:</p>
         resolution: &quot;(138.0,138.0,1.0)&quot;
         zoomlevels: 2
         fileextension: &quot;jpg&quot;
+        stackgroups:
+          - name: &quot;Example group&quot;
+            relation: &quot;has_channel&quot;
       - url: &quot;http://my.other.server.net/examplestack/&quot;
         name: &quot;Remote stack&quot;
         dimension: &quot;(3886,3893,55)&quot;
         resolution: &quot;(138.0,138.0,1.0)&quot;
         zoomlevels: 3
         fileextension: &quot;png&quot;
+        translation: &quot;(10.0, 20.0, 30.0)&quot;
+        tile_width: 512
+        tile_height: 512
+        tile_source_type: 2
+        stackgroups:
+          - name: &quot;Example group&quot;
+            relation: &quot;has_channel&quot;
 </pre></div>
 </div>
 <p>As can be seen, a project has only two properties: a name and a set of
@@ -218,7 +228,8 @@ setting. This setting <em>requires</em> to also use the <code class="docutils li
 <code class="docutils literal"><span class="pre">fileextension</span></code> fields, because the importer won&#8217;t try different URLs
 to get an idea about the file extension and the number of zoom levels.
 Like done for the folder based stacks, a url based stack needs the
-<code class="docutils literal"><span class="pre">resolution</span></code> and <code class="docutils literal"><span class="pre">dimension</span></code> fields, too.</p>
+<code class="docutils literal"><span class="pre">resolution</span></code> and <code class="docutils literal"><span class="pre">dimension</span></code> fields, too. It is also possible to declare
+<code class="docutils literal"><span class="pre">tile_width</span></code>, <code class="docutils literal"><span class="pre">tile_height</span></code> and <code class="docutils literal"><span class="pre">tile_source_type</span></code> information.</p>
 <p>A stack can also have <em>overlays</em>. To add one or more of them, please
 use the <code class="docutils literal"><span class="pre">overlays</span></code> field in a stack. Like visible in the example, an
 overlay needs at least a <code class="docutils literal"><span class="pre">name</span></code> and a data source, which can be
@@ -230,6 +241,27 @@ don&#8217;t need to, provide a <code class="docutils literal"><span class="pre">
 tries to find it on its own. Besides that, a default opacity for
 displaying an overlay can be provided, by using the <code class="docutils literal"><span class="pre">defaultopacity</span></code>
 key word. It ranges from zero to one. If not provided, it defaults to zero.</p>
+<p>CATMAID can link stacks to so called stack groups. These are general data
+structures that relate stacks to each other, for instance to denote that they
+represent channels of the same data set or are orthogonal views. There is no
+limit on how many stack groups a stack can be part of. Each stack in a project
+file can reference stack groups by <code class="docutils literal"><span class="pre">name</span></code> and the type of <code class="docutils literal"><span class="pre">relation</span></code> this
+stack has to this stack group. At the moment, valid relations are
+<code class="docutils literal"><span class="pre">has_channel</span></code> and <code class="docutils literal"><span class="pre">has_view</span></code>. All stacks referencing a stack group with the
+same name will be linked to the same new stack group in the new project. In the
+example above, a single stack group named &#8220;Example group&#8221; will be created,
+having stack 2 and 3 as members&#8212;each representing a layer/channel. Stack
+groups are used by the front-end to open multiple stacks at once in a more
+intelligent fashion (e.g. open multi-channel stack groups as layers in the same
+viewer).</p>
+<p>All specified stacks within a project are linked into a single space. By default
+each stack origin is mapped to the project space origin (0,0,0). An optional
+translation can be applied to this mapping: If a stack has a <code class="docutils literal"><span class="pre">translation</span></code>
+field, the stack is mapped with this offset into project space. Note that this
+translation is in project space coordinates (physical space, nanometers). The
+example above will link the last stack (&#8220;Remote stack&#8221;) to the project &#8220;Wing
+Disc 1&#8221; with an offset of <code class="docutils literal"><span class="pre">(10.0,</span> <span class="pre">20.0,</span> <span class="pre">30.0)</span></code> nanometers. Both other stacks
+will be mapped to the project space origin.</p>
 <p>Also, it wouldn&#8217;t confuse the tool if there is more YAML data in the
 project file than needed. It only uses what is depicted in the sample
 above. But please keep in mind to <em>not use the tab character</em> in the
@@ -274,12 +306,17 @@ available.</p>
 </div>
 <div class="section" id="using-the-importer">
 <h3>Using the Importer<a class="headerlink" href="#using-the-importer" title="Permalink to this headline">¶</a></h3>
-<p>To use the importer, you have to adjust your CATMAID settings file to
-make your data path and its URL known. These settings are called
-<code class="docutils literal"><span class="pre">CATMAID_IMPORT_PATH</span></code> and <code class="docutils literal"><span class="pre">CATMAID_IMPORT_URL</span></code>. Sticking to the
-examples from before, these variables might be:</p>
+<p>To use the importer, you have to adjust your CATMAID settings file to make your
+data path known to CATMAID. This can be done with the <code class="docutils literal"><span class="pre">CATMAID_IMPORT_PATH</span></code>
+settings. Sticking to the examples from before, this setting might be:</p>
 <div class="highlight-python"><div class="highlight"><pre>CATMAID_IMPORT_PATH = &lt;CATMAID-PATH&gt;/httpdocs/data
-CATMAID_IMPORT_URL = http://&lt;CATMAID-URL&gt;/data
+</pre></div>
+</div>
+<p>For imported stacks that don&#8217;t provide an image URL by themselves, CATMAID can
+construct an image base from the the <code class="docutils literal"><span class="pre">IMPORTER_DEFAULT_IMAGE_BASE</span></code> setting
+plus the imported project and stack names. For the example above, this variable
+could be set to:</p>
+<div class="highlight-python"><div class="highlight"><pre>IMPORTER_DEFAULT_IMAGE_BASE = http://&lt;CATMAID-URL&gt;/data
 </pre></div>
 </div>
 <p>With this in place, the importer can be used through Django&#8217;s admin
@@ -297,11 +334,11 @@ term. You can use Unix shell-style wildcards there. With the check-box
 below this setting, you can make sure the tool looks only at unknown
 projects. Here, a project is unknown if all of its stacks are known to
 CATMAID. A stack in turn is known if there is already a stack with the
-same image base. The last setting on this dialog is the <em>Base URL</em>. By
-default it is set to the value of <code class="docutils literal"><span class="pre">CATMAID_IMPORT_URL</span></code> (if available).
-This setting plus the relative path stay the same for every project
-to be imported in this run. To continue, click on the <em>next step</em>
-button.</p>
+same image base. The last setting on this dialog is the <em>Base URL</em>. By default
+it is set to the value of <code class="docutils literal"><span class="pre">IMPORTER_DEFAULT_IMAGE_BASE</span></code> (if available). This
+setting plus the relative path stay the same for every project to be imported in
+this run. It is used if imported stacks don&#8217;t provide a URL explicitly. To
+continue, click on the <em>next step</em> button.</p>
 <p>The importer will tell you if it doesn&#8217;t find any projects based on
 the settings of the first step. However, if it does find potential
 projects, it allows you to unselect projects that shouldn&#8217;t get
