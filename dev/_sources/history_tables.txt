@@ -8,7 +8,10 @@ range associated that denotes when this particular row was valid. This time
 period is represented by the half-open interval ``[start, end)`` for which a row
 is valid starting from time point ``start`` and is valid until (*but not
 including!*) ``end``. Keeping track of changes is managed entirely in the
-database. Currently, all CATMAID tables are versioned.
+database. Currently, all CATMAID tables except ``treenode_edge`` are versioned,
+which can always be regenerated from the ``treenode`` table. CATMAID als keeps
+track of changes in non-CATMAID tables, that is the tables used by Django and
+Django applications we use, except for Celery and Kombu tables.
 
 History tables
 --------------
