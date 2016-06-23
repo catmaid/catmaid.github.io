@@ -125,6 +125,13 @@ database migrations and then continue with the release you actually want.
 With the newer version, you have to then fake the initial migration:
 <code class="docutils literal"><span class="pre">manage.py</span> <span class="pre">migrate</span> <span class="pre">catmaid</span> <span class="pre">--fake</span> <span class="pre">0001_initial</span></code>.</p>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is advisable to go through the changelog (CHANGELOG.md file) for each
+release that is either skipped or upgrade to. Sometimes settings change or
+other adjustments are required, which the changelog will provide information
+on for the respective release.</p>
+</div>
 </div>
 <div class="section" id="backup-an-restore-the-database">
 <h2>Backup an restore the database<a class="headerlink" href="#backup-an-restore-the-database" title="Permalink to this headline">¶</a></h2>
