@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Exporting and Importing Data &mdash; CATMAID 2016.05.26-dev documentation</title>
+    <title>Exporting and Importing Data &mdash; CATMAID 2016.04.18-dev documentation</title>
     
     <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2016.05.26-dev',
+        VERSION:     '2016.04.18-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="CATMAID 2016.05.26-dev documentation" href="index.html" />
+    <link rel="top" title="CATMAID 2016.04.18-dev documentation" href="index.html" />
     <link rel="up" title="User Documentation" href="user.html" />
     <link rel="next" title="Using Data Views" href="data_views.html" />
     <link rel="prev" title="Frequently Asked (User) Questions" href="user_faq.html" /> 
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="user_faq.html" title="Frequently Asked (User) Questions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.05.26-dev documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.04.18-dev documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -192,9 +192,6 @@ file and could look like this for the example above:</p>
         zoomlevels: 3
         fileextension: &quot;png&quot;
         translation: &quot;(10.0, 20.0, 30.0)&quot;
-        tile_width: 512
-        tile_height: 512
-        tile_source_type: 2
         stackgroups:
           - name: &quot;Example group&quot;
             relation: &quot;has_channel&quot;
@@ -228,8 +225,7 @@ setting. This setting <em>requires</em> to also use the <code class="docutils li
 <code class="docutils literal"><span class="pre">fileextension</span></code> fields, because the importer won&#8217;t try different URLs
 to get an idea about the file extension and the number of zoom levels.
 Like done for the folder based stacks, a url based stack needs the
-<code class="docutils literal"><span class="pre">resolution</span></code> and <code class="docutils literal"><span class="pre">dimension</span></code> fields, too. It is also possible to declare
-<code class="docutils literal"><span class="pre">tile_width</span></code>, <code class="docutils literal"><span class="pre">tile_height</span></code> and <code class="docutils literal"><span class="pre">tile_source_type</span></code> information.</p>
+<code class="docutils literal"><span class="pre">resolution</span></code> and <code class="docutils literal"><span class="pre">dimension</span></code> fields, too.</p>
 <p>A stack can also have <em>overlays</em>. To add one or more of them, please
 use the <code class="docutils literal"><span class="pre">overlays</span></code> field in a stack. Like visible in the example, an
 overlay needs at least a <code class="docutils literal"><span class="pre">name</span></code> and a data source, which can be
@@ -306,17 +302,12 @@ available.</p>
 </div>
 <div class="section" id="using-the-importer">
 <h3>Using the Importer<a class="headerlink" href="#using-the-importer" title="Permalink to this headline">¶</a></h3>
-<p>To use the importer, you have to adjust your CATMAID settings file to make your
-data path known to CATMAID. This can be done with the <code class="docutils literal"><span class="pre">CATMAID_IMPORT_PATH</span></code>
-settings. Sticking to the examples from before, this setting might be:</p>
+<p>To use the importer, you have to adjust your CATMAID settings file to
+make your data path and its URL known. These settings are called
+<code class="docutils literal"><span class="pre">CATMAID_IMPORT_PATH</span></code> and <code class="docutils literal"><span class="pre">CATMAID_IMPORT_URL</span></code>. Sticking to the
+examples from before, these variables might be:</p>
 <div class="highlight-python"><div class="highlight"><pre>CATMAID_IMPORT_PATH = &lt;CATMAID-PATH&gt;/httpdocs/data
-</pre></div>
-</div>
-<p>For imported stacks that don&#8217;t provide an image URL by themselves, CATMAID can
-construct an image base from the the <code class="docutils literal"><span class="pre">IMPORTER_DEFAULT_IMAGE_BASE</span></code> setting
-plus the imported project and stack names. For the example above, this variable
-could be set to:</p>
-<div class="highlight-python"><div class="highlight"><pre>IMPORTER_DEFAULT_IMAGE_BASE = http://&lt;CATMAID-URL&gt;/data
+CATMAID_IMPORT_URL = http://&lt;CATMAID-URL&gt;/data
 </pre></div>
 </div>
 <p>With this in place, the importer can be used through Django&#8217;s admin
@@ -334,11 +325,11 @@ term. You can use Unix shell-style wildcards there. With the check-box
 below this setting, you can make sure the tool looks only at unknown
 projects. Here, a project is unknown if all of its stacks are known to
 CATMAID. A stack in turn is known if there is already a stack with the
-same image base. The last setting on this dialog is the <em>Base URL</em>. By default
-it is set to the value of <code class="docutils literal"><span class="pre">IMPORTER_DEFAULT_IMAGE_BASE</span></code> (if available). This
-setting plus the relative path stay the same for every project to be imported in
-this run. It is used if imported stacks don&#8217;t provide a URL explicitly. To
-continue, click on the <em>next step</em> button.</p>
+same image base. The last setting on this dialog is the <em>Base URL</em>. By
+default it is set to the value of <code class="docutils literal"><span class="pre">CATMAID_IMPORT_URL</span></code> (if available).
+This setting plus the relative path stay the same for every project
+to be imported in this run. To continue, click on the <em>next step</em>
+button.</p>
 <p>The importer will tell you if it doesn&#8217;t find any projects based on
 the settings of the first step. However, if it does find potential
 projects, it allows you to unselect projects that shouldn&#8217;t get
