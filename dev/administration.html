@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Administering a CATMAID Instance &mdash; CATMAID 2016.04.18-dev documentation</title>
+    <title>Administering a CATMAID Instance &mdash; CATMAID 2016.05.26-dev documentation</title>
     
     <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -18,7 +18,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '2016.04.18-dev',
+        VERSION:     '2016.05.26-dev',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -31,7 +31,7 @@
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="CATMAID 2016.04.18-dev documentation" href="index.html" />
+    <link rel="top" title="CATMAID 2016.05.26-dev documentation" href="index.html" />
     <link rel="up" title="Administrator Documentation" href="administrator.html" />
     <link rel="next" title="Trying CATMAID with Docker" href="docker.html" />
     <link rel="prev" title="Basic Installation Instructions" href="installation.html" /> 
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="installation.html" title="Basic Installation Instructions"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.04.18-dev documentation</a> &raquo;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.05.26-dev documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="administrator.html" accesskey="U">Administrator Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -125,6 +125,13 @@ database migrations and then continue with the release you actually want.
 With the newer version, you have to then fake the initial migration:
 <code class="docutils literal"><span class="pre">manage.py</span> <span class="pre">migrate</span> <span class="pre">catmaid</span> <span class="pre">--fake</span> <span class="pre">0001_initial</span></code>.</p>
 </div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It is advisable to go through the changelog (CHANGELOG.md file) for each
+release that is either skipped or upgrade to. Sometimes settings change or
+other adjustments are required, which the changelog will provide information
+on for the respective release.</p>
+</div>
 </div>
 <div class="section" id="backup-an-restore-the-database">
 <h2>Backup an restore the database<a class="headerlink" href="#backup-an-restore-the-database" title="Permalink to this headline">¶</a></h2>
@@ -134,8 +141,9 @@ related to a certain source code version. Reflecting the commit name
 in the backup name, might therefore be a good idea. A mismatch might
 cause some trouble when a database backup is used that includes
 migrations that are not present in the selected CATMAID version.</p>
-<p>To backup the database named &#8220;catmaid&#8221;:</p>
-<div class="highlight-python"><div class="highlight"><pre>pg_dump --clean -U &lt;CATMAID-USER&gt; catmaid -f catmaid_dump.sql
+<p>To backup the complete database (here named &#8220;catmaid&#8221;), except tables that can
+be restored automatically (to save space):</p>
+<div class="highlight-python"><div class="highlight"><pre>pg_dump --clean -T treenode_edge -U &lt;CATMAID-USER&gt; catmaid -f catmaid_dump.sql
 </pre></div>
 </div>
 <p>To restore the dumped database into a database named &#8220;catmaid&#8221; (which would have
@@ -148,6 +156,12 @@ scripts <code class="docutils literal"><span class="pre">scripts/database/backup
 <code class="docutils literal"><span class="pre">scripts/database/revert-database.py</span></code>, which basically do the same
 thing. Those, however, don&#8217;t ask for a password, but require a
 <code class="docutils literal"><span class="pre">.pgpass</span></code> file (see <a class="reference external" href="http://www.postgresql.org/docs/current/static/libpq-pgpass.html">PostgreSQL documentation</a>).</p>
+<p>If <code class="docutils literal"><span class="pre">-T</span> <span class="pre">treenode_edge</span></code> in the first command above is omitted, all tables
+are exported and no additional steps are required. If it was used, though, the
+following command has to be executed additionally, to complete the import:</p>
+<div class="highlight-python"><div class="highlight"><pre>manage.py catmaid_rebuild_edge_table
+</pre></div>
+</div>
 <p>A cron job can be used to automate the backup process. Since this will be run as
 the <code class="docutils literal"><span class="pre">root</span></code> user, no password will be needed. The root user&#8217;s crontab file can
 be edited with:</p>
@@ -157,7 +171,7 @@ be edited with:</p>
 <p>The actual crontab file is not meant to be edited directly, but only through the
 <code class="docutils literal"><span class="pre">crontab</span></code> tool. To run the above backup  command every night at 3am, the
 following line would have to be added:</p>
-<div class="highlight-python"><div class="highlight"><pre>0 3 * * * sudo -u postgres pg_dump --clean catmaid -f &quot;/opt/backup/psql/catmaid_$(date +\%Y\%m\%d\%H\%M).sql&quot;
+<div class="highlight-python"><div class="highlight"><pre>0 3 * * * sudo -u postgres pg_dump --clean -T treenode_edge catmaid -f &quot;/opt/backup/psql/catmaid_$(date +\%Y\%m\%d\%H\%M).sql&quot;
 </pre></div>
 </div>
 <p>This would create a new file in the folder <code class="docutils literal"><span class="pre">/opt/backup/psql</span></code> at 3am every
@@ -222,7 +236,7 @@ accessed.</li>
 to the log. CATMAID can produce a lot of requests and writing every single one
 to disk, especially if multiple users use CATMAID, can be a real performance
 hit.</li>
-<li>Make use of the <a class="reference external" href="https://http://en.wikipedia.org/wiki/SPDY">SPDY</a> protocol.
+<li>Make use of the <a class="reference external" href="https://http://en.wikipedia.org/wiki/HTTP/2">HTTP/2</a> protocol.
 Modern browsers and webservers support it and it only requires you to set up
 SSL/TLS as an additional step before activating it. Through multiplexing,
 compression and prioritization much better use of single connections. Requests
