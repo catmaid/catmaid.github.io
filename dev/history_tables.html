@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>History and prevenance tracking &mdash; CATMAID 2016.05.26-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" type="text/css" />
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2016.05.26-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="CATMAID 2016.05.26-dev documentation" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.05.26-dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="history-and-prevenance-tracking">
+<span id="history-tables"></span><h1>History and prevenance tracking<a class="headerlink" href="#history-and-prevenance-tracking" title="Permalink to this headline">¶</a></h1>
+<p>CATMAID keeps track of all changes to its database tables. Each row has a time
+range associated that denotes when this particular row was valid. This time
+period is represented by the half-open interval <code class="docutils literal"><span class="pre">[start,</span> <span class="pre">end)</span></code> for which a row
+is valid starting from time point <code class="docutils literal"><span class="pre">start</span></code> and is valid until (<em>but not
+including!</em>) <code class="docutils literal"><span class="pre">end</span></code>. Keeping track of changes is managed entirely in the
+database. Currently, all CATMAID tables except <code class="docutils literal"><span class="pre">treenode_edge</span></code> are versioned,
+which can always be regenerated from the <code class="docutils literal"><span class="pre">treenode</span></code> table. CATMAID als keeps
+track of changes in non-CATMAID tables, that is the tables used by Django and
+Django applications we use, except for Celery and Kombu tables.</p>
+<div class="section" id="id1">
+<h2>History tables<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Each versioned table has a so called history table associated, indicated by the
+<code class="docutils literal"><span class="pre">_history</span></code> suffix (e.g. <code class="docutils literal"><span class="pre">project</span></code> and <code class="docutils literal"><span class="pre">project_history</span></code>). This history
+table is populated automatically through database triggers: whenever data in the
+live table is inserted, updated or deleted, the history table will be be
+updated. It contains a complete copy for each version of each row and specifies
+a time period for its validity. This time period is called &#8220;system time&#8221; and is
+represented through the additional <code class="docutils literal"><span class="pre">sys_period</span></code> column in each history table.</p>
+<p>CATMAID&#8217;s history system has one requiremens for tables it keeps track of: a
+single column primary key has to be used. Extending it to support multi-column
+primary keys is possible, not needed at the moment.</p>
+<p>By default, all tables of CATMAID itself plus the user table (a Django table)
+are set up to track history. To enable this for other tables (e.g. if new tables
+are added), the database function <code class="docutils literal"><span class="pre">create_history_table(</span> <span class="pre">live_table_name</span> <span class="pre">)</span></code>
+can be used. This will create the history table and sets up all required
+triggers. Likewise, there is a <code class="docutils literal"><span class="pre">delete_history_table(</span> <span class="pre">live_table_name</span> <span class="pre">)</span></code>
+function, which makes sure a history table is removed cleanly if this is wanted.
+The table <code class="docutils literal"><span class="pre">history_table</span></code> keeps track of all currently active history tables.</p>
+<div class="section" id="disabling-history-tables">
+<h3>Disabling history tables<a class="headerlink" href="#disabling-history-tables" title="Permalink to this headline">¶</a></h3>
+<p>While history tracking is important and in most situations desirable, there are
+a few situations where it would beneficial to disable it (e.g. some database
+maintenance tasks). To do this the setting <code class="docutils literal"><span class="pre">HISTORY_TRACKING</span></code> can be set to
+<code class="docutils literal"><span class="pre">False</span></code>, i.e. add the following line to the <code class="docutils literal"><span class="pre">settings.py</span></code> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">HISTORY_TRACKING</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>With the next restart of CATMAID, history tracking will be disabled. Likewise,
+it can be enabled again by setting <code class="docutils literal"><span class="pre">HISTORY_TRACKING</span> <span class="pre">=</span> <span class="pre">True</span></code> (or removing the
+line).</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo" src="_static/catmaidlogo.png" alt="Logo" align="left"/>
+</a></p>
+<br clear="all"/><br /><h3><a href="index.html">Home</a></h3>
+<h3><a href="screenshots.html">Screenshots</a></h3>
+<h3><a href="whouses.html">Who uses it?</a></h3>
+<h3><a href="publications.html">Publications</a></h3>
+<h3><a href="funding.html">Funding</a></h3>
+<h3><a href="credits.html">Credits</a></h3>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/catmaid/CATMAID">Source Code</a></li>
+  <li><a href="http://github.com/catmaid/CATMAID/issues">Issues</a></li>
+  <li><a href="http://groups.google.com/group/CATMAID">Mailinglist</a></li>
+  <li><a href="http://fly.mpi-cbg.de/~saalfeld/catmaid/">Old page</a></li>
+</ul>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17713054-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">History and prevenance tracking</a><ul>
+<li><a class="reference internal" href="#id1">History tables</a><ul>
+<li><a class="reference internal" href="#disabling-history-tables">Disabling history tables</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation</a><ul>
+  </ul></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2016, CATMAID Developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
