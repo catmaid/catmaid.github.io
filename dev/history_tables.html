@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>History and prevenance tracking &mdash; CATMAID 2016.05.26-dev documentation</title>
+    <title>History and provenance tracking &mdash; CATMAID 2016.05.26-dev documentation</title>
     
     <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -31,7 +31,10 @@
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
     <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="CATMAID 2016.05.26-dev documentation" href="index.html" /> 
+    <link rel="top" title="CATMAID 2016.05.26-dev documentation" href="index.html" />
+    <link rel="up" title="Administrator Documentation" href="administrator.html" />
+    <link rel="next" title="Trying CATMAID with Docker" href="docker.html" />
+    <link rel="prev" title="Administering a CATMAID Instance" href="administration.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -40,7 +43,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.05.26-dev documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="docker.html" title="Trying CATMAID with Docker"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="administration.html" title="Administering a CATMAID Instance"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.05.26-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="administrator.html" accesskey="U">Administrator Documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -49,8 +59,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="history-and-prevenance-tracking">
-<span id="history-tables"></span><h1>History and prevenance tracking<a class="headerlink" href="#history-and-prevenance-tracking" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="history-and-provenance-tracking">
+<span id="history-tables"></span><h1>History and provenance tracking<a class="headerlink" href="#history-and-provenance-tracking" title="Permalink to this headline">¶</a></h1>
 <p>CATMAID keeps track of all changes to its database tables. Each row has a time
 range associated that denotes when this particular row was valid. This time
 period is represented by the half-open interval <code class="docutils literal"><span class="pre">[start,</span> <span class="pre">end)</span></code> for which a row
@@ -69,7 +79,7 @@ live table is inserted, updated or deleted, the history table will be be
 updated. It contains a complete copy for each version of each row and specifies
 a time period for its validity. This time period is called &#8220;system time&#8221; and is
 represented through the additional <code class="docutils literal"><span class="pre">sys_period</span></code> column in each history table.</p>
-<p>CATMAID&#8217;s history system has one requiremens for tables it keeps track of: a
+<p>CATMAID&#8217;s history system has one requirement for tables it keeps track of: a
 single column primary key has to be used. Extending it to support multi-column
 primary keys is possible, not needed at the moment.</p>
 <p>By default, all tables of CATMAID itself plus the user table (a Django table)
@@ -133,7 +143,7 @@ contain the most recent live data as well.</p>
 </script>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">History and prevenance tracking</a><ul>
+<li><a class="reference internal" href="#">History and provenance tracking</a><ul>
 <li><a class="reference internal" href="#id1">History tables</a><ul>
 <li><a class="reference internal" href="#disabling-history-tables">Disabling history tables</a></li>
 </ul>
@@ -144,6 +154,10 @@ contain the most recent live data as well.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation</a><ul>
+  <li><a href="administrator.html">Administrator Documentation</a><ul>
+      <li>Previous: <a href="administration.html" title="previous chapter">Administering a CATMAID Instance</a></li>
+      <li>Next: <a href="docker.html" title="next chapter">Trying CATMAID with Docker</a></li>
+  </ul></li>
   </ul></li>
 </ul>
         </div>
