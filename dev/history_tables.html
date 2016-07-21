@@ -90,7 +90,9 @@ maintenance tasks). To do this the setting <code class="docutils literal"><span 
 </div>
 <p>With the next restart of CATMAID, history tracking will be disabled. Likewise,
 it can be enabled again by setting <code class="docutils literal"><span class="pre">HISTORY_TRACKING</span> <span class="pre">=</span> <span class="pre">True</span></code> (or removing the
-line).</p>
+line). If the history system is enabled after it was disabled (i.e. database
+triggers have to be created), all history tables are synchronized so that they
+contain the most recent live data as well.</p>
 </div>
 </div>
 </div>
