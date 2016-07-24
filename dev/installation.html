@@ -214,8 +214,7 @@ database called <code class="docutils literal"><span class="pre">catmaid</span><
 <code class="docutils literal"><span class="pre">catmaid_user</span></code>.  Firstly, we need to reconfigure PostgreSQL to
 allow password-based authentication for that user to that
 database.  To do that, edit the file
-<code class="docutils literal"><span class="pre">/etc/postgresql/9.3/main/pg_hba.conf</span></code> (where <code class="docutils literal"><span class="pre">9.3</span></code> may be a
-slightly different version for you) and add this line as the
+<code class="docutils literal"><span class="pre">/etc/postgresql/9.5/main/pg_hba.conf</span></code> and add this line as the
 <em>first</em> rule in that file:</p>
 <div class="highlight-python"><div class="highlight"><pre>local catmaid catmaid_user md5
 </pre></div>
@@ -240,7 +239,7 @@ access the database and see that it is currently empty except for PostGIS
 relations, e.g.:</p>
 <div class="highlight-python"><div class="highlight"><pre>psql -U catmaid_user catmaid
 Password:
-psql (9.3.4)
+psql (9.5.3)
 Type &quot;help&quot; for help.
 
 catmaid=&gt; \d
