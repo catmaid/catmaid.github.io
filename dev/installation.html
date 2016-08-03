@@ -76,13 +76,25 @@ For installation on Mac OS X, first read these
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The most fundamental dependencies of CATMAID are:</p>
 <ol class="arabic simple">
-<li>PostgreSQL &gt;= 9.3 and PostGIS &gt;= 2.1</li>
+<li>PostgreSQL &gt;= 9.5 and PostGIS &gt;= 2.2</li>
 <li>Python 2.7</li>
 <li>Imagemagick (for generating image tiles)</li>
 </ol>
-<p>On Debian-based systems, such as Ubuntu, you can install these
-with:</p>
-<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python postgresql-9.3 imagemagick
+<p>To get the required PostgreSQL version for Debian-based systems, such as
+Ubuntu, you have to add the officical Postgres repository as an
+<a class="reference external" href="https://wiki.postgresql.org/wiki/Apt">extra Apt repository</a> (if you haven&#8217;t
+done so already):</p>
+<div class="highlight-python"><div class="highlight"><pre>PG_URL=&quot;http://apt.postgresql.org/pub/repos/apt/&quot;
+APT_LINE=&quot;deb ${PG_URL} $(lsb_release -cs)-pgdg main&quot;
+echo &quot;${APT_LINE}&quot; | sudo tee &quot;/etc/apt/sources.list.d/pgdg.list&quot;
+sudo apt-get install wget ca-certificates
+PG_KEY_URL=&quot;https://www.postgresql.org/media/keys/ACCC4CF8.asc&quot;
+wget --quiet -O - ${PG_KEY_URL} | sudo apt-key add -
+sudo apt-get update
+</pre></div>
+</div>
+<p>And then you can install these dependencies with:</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo apt-get install python postgresql-9.5 imagemagick
 </pre></div>
 </div>
 <p>CATMAID is based on the <a class="reference external" href="https://www.djangoproject.com/">Django web framework</a>.  If you just wish to work on
@@ -112,7 +124,7 @@ libraries that you will need to install in advance, however. You can do this
 with one of the following commands (the one suiting best your OS):</p>
 <p>Ubuntu 14.04:</p>
 <blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre>sudo apt-get install postgresql-9.4 postgresql-9.4-postgis-2.1 \
+<div><div class="highlight-python"><div class="highlight"><pre>sudo apt-get install postgresql-9.5 postgresql-9.5-postgis-2.2 \
                      imagemagick gcc gfortran python2.7-dev \
                      postgresql-common libpq-dev libgraphicsmagick++1-dev \
                      graphicsmagick libhdf5-serial-dev libboost-dev \
@@ -125,7 +137,7 @@ with one of the following commands (the one suiting best your OS):</p>
 </div></blockquote>
 <p>Ubuntu 12.04:</p>
 <blockquote>
-<div><div class="highlight-python"><div class="highlight"><pre>sudo apt-get install postgresql-9.4 postgresql-9.4-postgis-2.1 \
+<div><div class="highlight-python"><div class="highlight"><pre>sudo apt-get install postgresql-9.5 postgresql-9.5-postgis-2.2 \
                      imagemagick gcc gfortran python2.7-dev libpq-dev \
                      libgraphicsmagick++1-dev graphicsmagick \
                      libhdf5-serial-dev libboost1.48-dev \
@@ -203,8 +215,7 @@ database called <code class="docutils literal"><span class="pre">catmaid</span><
 <code class="docutils literal"><span class="pre">catmaid_user</span></code>.  Firstly, we need to reconfigure PostgreSQL to
 allow password-based authentication for that user to that
 database.  To do that, edit the file
-<code class="docutils literal"><span class="pre">/etc/postgresql/9.3/main/pg_hba.conf</span></code> (where <code class="docutils literal"><span class="pre">9.3</span></code> may be a
-slightly different version for you) and add this line as the
+<code class="docutils literal"><span class="pre">/etc/postgresql/9.5/main/pg_hba.conf</span></code> and add this line as the
 <em>first</em> rule in that file:</p>
 <div class="highlight-python"><div class="highlight"><pre>local catmaid catmaid_user md5
 </pre></div>
@@ -229,7 +240,7 @@ access the database and see that it is currently empty except for PostGIS
 relations, e.g.:</p>
 <div class="highlight-python"><div class="highlight"><pre>psql -U catmaid_user catmaid
 Password:
-psql (9.3.4)
+psql (9.5.3)
 Type &quot;help&quot; for help.
 
 catmaid=&gt; \d
