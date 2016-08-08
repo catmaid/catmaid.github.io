@@ -231,36 +231,6 @@ are created:</p>
 </div>
 <p>Now this could be run in a Screen session and you can safely disconnect from
 the server. However, like said before, this won&#8217;t survive a server reboot.</p>
-<div class="section" id="supervisord">
-<span id="celery-supervisord"></span><h3>Supervisord<a class="headerlink" href="#supervisord" title="Permalink to this headline">¶</a></h3>
-<p>Supervisord is a process management tool which makes setting up processes very
-easy. This documentation talks <a class="reference internal" href="alternative_install.html#supervisord"><span>here</span></a> in detail about it. A
-script that can be used with the example provided there would look like this
-(<code class="docutils literal"><span class="pre">run-celery.sh</span></code> in the example):</p>
-<div class="highlight-python"><div class="highlight"><pre>#!/bin/bash
-
-# Virtualenv location
-ENVDIR=/path/to/catmaid/django/env
-# Django project directory
-DJANGODIR=/path/to/catmaid/django/projects
-# Which settings file should Django use
-DJANGO_SETTINGS_MODULE=mysite.settings
-
-echo &quot;Starting celery as `whoami`&quot;
-
-# Activate the virtual environment
-cd $DJANGODIR
-source $ENVDIR/bin/activate
-export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
-export PYTHONPATH=$DJANGODIR:$PYTHONPATH
-
-# Run Celery
-exec ./mysite/manage.py celery worker -l info -E
-</pre></div>
-</div>
-</div>
-<div class="section" id="init">
-<h3>Init<a class="headerlink" href="#init" title="Permalink to this headline">¶</a></h3>
 <p>Depending on your operating system manages the boot process, you can use
 the <code class="docutils literal"><span class="pre">init</span></code> scripts provided in the Celery source. A detailed description
 can be found in the
@@ -364,7 +334,6 @@ marked executable. Finally, tell the operating system about it:</p>
 as well.</p>
 </div>
 </div>
-</div>
 
 
           </div>
@@ -407,11 +376,7 @@ as well.</p>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#message-brokers">Message Brokers</a></li>
 <li><a class="reference internal" href="#periodic-tasks">Periodic Tasks</a></li>
-<li><a class="reference internal" href="#celery-daemon">Celery Daemon</a><ul>
-<li><a class="reference internal" href="#supervisord">Supervisord</a></li>
-<li><a class="reference internal" href="#init">Init</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#celery-daemon">Celery Daemon</a></li>
 </ul>
 </li>
 </ul>

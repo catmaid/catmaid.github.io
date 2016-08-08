@@ -111,21 +111,13 @@ structures.</p>
 folder. Within this folder, <code class="docutils literal"><span class="pre">models.py</span></code> defines the database schema and
 logical objects on which the back API operates, while <code class="docutils literal"><span class="pre">urls.py</span></code> maps URI
 endpoints in the API to Python methods. Both are useful starting points when
-locating particular functionality or determining where to add new functionality.
-In case an endpoint changes data, a transaction log entry is added. This way
-semantic information can be linked to individual database changes. Writing
-endpoints are decorated with a <code class="docutils literal"><span class="pre">record_view</span></code> decorator in <code class="docutils literal"><span class="pre">urls.py</span></code>. Make
-sure to follow this convention for new endpoints.</p>
+locating particular functionality or determining where to add new functionality.</p>
 <p>Most of the API routes to the <code class="docutils literal"><span class="pre">catmaid.control</span></code> module and folder. Within this
 module API functions are organized into logical units like skeleton or
 connector, which are grouped into corresponding Python modules. These often
 contain utility functions not exposed by the API that may be useful, so when
 developing a new API endpoint be sure to check related modules for reusable
 utilities.</p>
-<p>Back-end errors should always be signaled to the front-end with the help
-of Exceptions. Regardless whether an argument is missing, permissions are
-lacking or something went wrong otherwise. A dedicated middleware will catch
-them and return them in an expected format to the front-end.</p>
 </div>
 <div class="section" id="frontend">
 <h3>Frontend<a class="headerlink" href="#frontend" title="Permalink to this headline">¶</a></h3>

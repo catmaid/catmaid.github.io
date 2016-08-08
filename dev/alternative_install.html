@@ -278,47 +278,6 @@ with <code class="docutils literal"><span class="pre">initctl</span> <span class
 started on boot automatically, and can be restarted with
 <code class="docutils literal"><span class="pre">initctl</span> <span class="pre">restart</span> <span class="pre">gunicorn-catmaid</span></code>.</p>
 </div>
-<div class="section" id="using-supervisord-for-process-management">
-<span id="supervisord"></span><h2>Using Supervisord for process management<a class="headerlink" href="#using-supervisord-for-process-management" title="Permalink to this headline">¶</a></h2>
-<p>Depending on your setup, you might use custom scripts to run a WSGI server,
-Celery or other server components. In this case, process management has to be
-taken care of as well, so that these scripts are run after a e.g. a server
-restart. One way to do this is using <code class="docutils literal"><span class="pre">supervisord</span></code>. We found it to be
-reliable, flexible and easy to configure with multiple custom scripts. For each
-program or program group a new configuration file has to be created:</p>
-<div class="highlight-python"><div class="highlight"><pre>/etc/supervisor/conf.d/&lt;name&gt;.conf
-</pre></div>
-</div>
-<p>Such a configuration file can contain information about individual programs and
-groups of them (to manage them together). Below you will find an example of
-a typical setup with a Gunicorn start script and a Celery start script, both
-grouped under the name &#8220;catmaid&#8221;:</p>
-<div class="highlight-python"><div class="highlight"><pre>[program:catmaid-app]
-command = /opt/catmaid/django/projects/mysite/run-gunicorn.sh
-user = www-data
-stdout_logfile = /opt/catmaid/django/projects/mysite/gunicorn.log
-redirect_stderr = true
-
-[program:catmaid-celery]
-command = /opt/catmaid/django/projects/mysite/run-celery.sh
-user = www-data
-stdout_logfile = /opt/catmaid/django/projects/mysite/celery.log
-redirect_stderr = true
-
-[group:catmaid]
-programs=catmaid-app,catmaid-celery
-</pre></div>
-</div>
-<p>This of course expects a CATMAID instance installed in the folder
-<code class="docutils literal"><span class="pre">/opt/catmaid/</span></code>. An example for a working <code class="docutils literal"><span class="pre">run-celery.sh</span></code> script can be
-found <a class="reference internal" href="celeryinstall.html#celery-supervisord"><span>here</span></a>. With the configuration and the scripts
-in place, <code class="docutils literal"><span class="pre">supervisord</span></code> can be instructed to reload its configuration and
-start the catmaid group:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ sudo supervisorctl reread
-$ sudo supervisorctl start catmaid:
-</pre></div>
-</div>
-</div>
 </div>
 
 
@@ -368,7 +327,6 @@ $ sudo supervisorctl start catmaid:
 </li>
 <li><a class="reference internal" href="#setup-based-on-nginx-and-uwsgi">Setup based on Nginx and uWSGI</a></li>
 <li><a class="reference internal" href="#setup-based-on-nginx-and-gunicorn">Setup based on Nginx and Gunicorn</a></li>
-<li><a class="reference internal" href="#using-supervisord-for-process-management">Using Supervisord for process management</a></li>
 </ul>
 </li>
 </ul>
