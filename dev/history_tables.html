@@ -95,6 +95,15 @@ triggers. Likewise, there is a <code class="docutils literal"><span class="pre">
 function, which makes sure a history table is removed cleanly if this is wanted.
 The table <code class="docutils literal"><span class="pre">catmaid_history_table</span></code> keeps track of all currently active history
 tables.</p>
+<div class="section" id="transaction-log">
+<h3>Transaction log<a class="headerlink" href="#transaction-log" title="Permalink to this headline">¶</a></h3>
+<p>Each endpoint of the CATMAID API that changes data is supposed to leave a log
+entry in the transaction log. This way, database changes can be associated with
+a particular back-end operation. Like explained in the <a class="reference internal" href="contributing.html#contributor-backend"><span>contributor
+documentation</span></a>, data changing endpoints in <code class="docutils literal"><span class="pre">urls.py</span></code>
+are wrapped in a <code class="docutils literal"><span class="pre">record_view</span></code> decorator, which is parameterized with a label.
+This label is used by the back-end to find affected tables of a change.</p>
+</div>
 <div class="section" id="disabling-history-tracking">
 <h3>Disabling history tracking<a class="headerlink" href="#disabling-history-tracking" title="Permalink to this headline">¶</a></h3>
 <p>While history tracking is important and in most situations desirable, there are
@@ -207,6 +216,7 @@ $$;
   <ul>
 <li><a class="reference internal" href="#">History and provenance tracking</a><ul>
 <li><a class="reference internal" href="#id1">History tables</a><ul>
+<li><a class="reference internal" href="#transaction-log">Transaction log</a></li>
 <li><a class="reference internal" href="#disabling-history-tracking">Disabling history tracking</a></li>
 <li><a class="reference internal" href="#schema-migration">Schema migration</a></li>
 </ul>
