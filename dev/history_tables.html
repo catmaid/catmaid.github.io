@@ -61,24 +61,29 @@
             
   <div class="section" id="history-and-provenance-tracking">
 <span id="history-tables"></span><h1>History and provenance tracking<a class="headerlink" href="#history-and-provenance-tracking" title="Permalink to this headline">¶</a></h1>
-<p>CATMAID keeps track of all changes to its database tables. Each row has a time
-range associated that denotes when this particular row was valid. This time
-period is represented by the half-open interval <code class="docutils literal"><span class="pre">[start,</span> <span class="pre">end)</span></code> for which a row
-is valid starting from time point <code class="docutils literal"><span class="pre">start</span></code> and is valid until (<em>but not
-including!</em>) <code class="docutils literal"><span class="pre">end</span></code>. Keeping track of changes is managed entirely in the
-database. Currently, all CATMAID tables except <code class="docutils literal"><span class="pre">treenode_edge</span></code> are versioned,
-which can always be regenerated from the <code class="docutils literal"><span class="pre">treenode</span></code> table. CATMAID also keeps
-track of changes in non-CATMAID tables, that is the tables used by Django and
-Django applications we use, except for Celery and Kombu tables.</p>
+<p>CATMAID keeps track of all changes to its database tables. If a database row
+is changed, all old values will be stored in a so history table together with
+a time range representing the datas validity. This time period is represented by
+the half-open interval <code class="docutils literal"><span class="pre">[start,</span> <span class="pre">end)</span></code> for which a row is valid starting from
+time point <code class="docutils literal"><span class="pre">start</span></code> and is valid until (<em>but not including!</em>) <code class="docutils literal"><span class="pre">end</span></code>. Keeping
+track of changes is managed entirely in the database. Currently, all CATMAID
+tables except <code class="docutils literal"><span class="pre">treenode_edge</span></code> and a few others are versioned, which can
+typically be regenerated. CATMAID also keeps track of changes in most
+non-CATMAID tables, that is the tables used by Django and Django applications we
+use, except for asynchronous task related Celery and Kombu.</p>
 <div class="section" id="id1">
 <h2>History tables<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Each versioned table has a so called history table associated, indicated by the
 <code class="docutils literal"><span class="pre">_history</span></code> suffix (e.g. <code class="docutils literal"><span class="pre">project</span></code> and <code class="docutils literal"><span class="pre">project_history</span></code>). This history
 table is populated automatically through database triggers: whenever data in the
-live table is inserted, updated or deleted, the history table will be be
-updated. It contains a complete copy for each version of each row and specifies
-a time period for its validity. This time period is called &#8220;system time&#8221; and is
-represented through the additional <code class="docutils literal"><span class="pre">sys_period</span></code> column in each history table.</p>
+live table is updated or deleted, the history table will be be
+updated. It contains a complete copy for every historic version of each row and
+specifies a time period for its validity. This time period is called &#8220;system
+time&#8221; and is represented through the additional <code class="docutils literal"><span class="pre">sys_period</span></code> column in each
+history table. This time range spans typically the time of the last edittion (or
+creation) to the time of change. If a live table doesn&#8217;t store such a start time
+stamp, a separate 1:1 time table, which keeps track of editions, is created and
+managed.</p>
 <p>CATMAID&#8217;s history system has one requirement for tables it keeps track of: a
 single column primary key has to be used. Extending it to support multi-column
 primary keys is possible, not needed at the moment.</p>
@@ -88,13 +93,15 @@ are added), the database function <code class="docutils literal"><span class="pr
 can be used. This will create the history table and sets up all required
 triggers. Likewise, there is a <code class="docutils literal"><span class="pre">delete_history_table(</span> <span class="pre">live_table_name</span> <span class="pre">)</span></code>
 function, which makes sure a history table is removed cleanly if this is wanted.
-The table <code class="docutils literal"><span class="pre">history_table</span></code> keeps track of all currently active history tables.</p>
-<div class="section" id="disabling-history-tables">
-<h3>Disabling history tables<a class="headerlink" href="#disabling-history-tables" title="Permalink to this headline">¶</a></h3>
+The table <code class="docutils literal"><span class="pre">catmaid_history_table</span></code> keeps track of all currently active history
+tables.</p>
+<div class="section" id="disabling-history-tracking">
+<h3>Disabling history tracking<a class="headerlink" href="#disabling-history-tracking" title="Permalink to this headline">¶</a></h3>
 <p>While history tracking is important and in most situations desirable, there are
 a few situations where it would beneficial to disable it (e.g. some database
-maintenance tasks). To do this the setting <code class="docutils literal"><span class="pre">HISTORY_TRACKING</span></code> can be set to
-<code class="docutils literal"><span class="pre">False</span></code>, i.e. add the following line to the <code class="docutils literal"><span class="pre">settings.py</span></code> file:</p>
+maintenance tasks, more performance). To do this the setting
+<code class="docutils literal"><span class="pre">HISTORY_TRACKING</span></code> can be set to <code class="docutils literal"><span class="pre">False</span></code>, i.e. add the following line to the
+<code class="docutils literal"><span class="pre">settings.py</span></code> file:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">HISTORY_TRACKING</span> <span class="o">=</span> <span class="bp">False</span>
 </pre></div>
 </div>
@@ -111,20 +118,23 @@ tables have to be changed as well. Currently, this happens manually, but will
 become automated eventually (using Postgres DDL triggers). This means</p>
 <ul class="simple">
 <li>a) if a live table is created, a new history table has to be created for it
-(call <cite>SELECT create_history_table(&lt;schema&gt;, &lt;tablename&gt;::regclass,
-&lt;timecolumn&gt;);</cite>, with <cite>&lt;timecolumn&gt;</cite> being an edit reference time, e.g.
-<cite>edition_time</cite> for most CATMAID tables)</li>
+(call <code class="docutils literal"><span class="pre">SELECT</span> <span class="pre">create_history_table(&lt;schema&gt;,</span> <span class="pre">&lt;tablename&gt;::regclass,</span>
+<span class="pre">&lt;timecolumn&gt;);</span></code>, with <code class="docutils literal"><span class="pre">&lt;timecolumn&gt;</span></code> being an edit reference time, e.g.
+<code class="docutils literal"><span class="pre">edition_time</span></code> for most CATMAID tables). To let CATMAID know if you expect
+this table to have a history table, Add the table to the appropriate list
+in the <code class="docutils literal"><span class="pre">HistoryTableTest</span></code> class. This way you can also mark a table as not
+versioned.</li>
 <li>b) if a live table is renamed, the history table is renamed accordingly, use
-<cite>history_table_name(&lt;tablename&gt;::regclass)</cite> to create the new name,</li>
+the function <code class="docutils literal"><span class="pre">history_table_name(&lt;tablename&gt;::regclass)</span></code> to create the new name,</li>
 <li><ol class="first loweralpha" start="3">
-<li>if a live table is removed, the history table should be dropped as well,</li>
+<li>if a live table is removed, the history table should be dropped as well</li>
 </ol>
 </li>
 </ul>
 <p>or</p>
 <ul class="simple">
 <li>d) if a column is added, the history table should get the new column as well
-(defaulting to NULL values for previous entries if not manually filled),</li>
+(defaulting to <code class="docutils literal"><span class="pre">NULL</span></code> values for previous entries if not manually filled),</li>
 <li><ol class="first loweralpha" start="5">
 <li>if a column is renamed, the history column should also be renamed or</li>
 </ol>
@@ -138,7 +148,23 @@ changed without backup to save storage space or</li>
 </ol>
 </li>
 </ul>
-<p>These changes should be done as part of the schema modifying migration</p>
+<p>These changes should be done as part of the schema modifying migration. Below
+you will find a an example of the migration SQL code to update the data type of
+a particular column of a table. In this particular case the <code class="docutils literal"><span class="pre">value</span></code> column of
+the <code class="docutils literal"><span class="pre">client_data</span></code> table changes its type from <code class="docutils literal"><span class="pre">text</span></code> to <code class="docutils literal"><span class="pre">jsonb</span></code>, which
+should be reflected directly in the history table:</p>
+<div class="highlight-python"><div class="highlight"><pre>DO $$
+BEGIN
+EXECUTE format(
+    &#39;ALTER TABLE %1$s &#39;
+    &#39;ALTER COLUMN value &#39;
+    &#39;TYPE jsonb &#39;
+    &#39;USING value::jsonb&#39;,
+    history_table_name(&#39;client_data&#39;::regclass));
+END
+$$;
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -181,7 +207,7 @@ changed without backup to save storage space or</li>
   <ul>
 <li><a class="reference internal" href="#">History and provenance tracking</a><ul>
 <li><a class="reference internal" href="#id1">History tables</a><ul>
-<li><a class="reference internal" href="#disabling-history-tables">Disabling history tables</a></li>
+<li><a class="reference internal" href="#disabling-history-tracking">Disabling history tracking</a></li>
 <li><a class="reference internal" href="#schema-migration">Schema migration</a></li>
 </ul>
 </li>
