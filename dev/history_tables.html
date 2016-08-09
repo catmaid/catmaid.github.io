@@ -123,16 +123,18 @@ contain the most recent live data as well.</p>
 <div class="section" id="schema-migration">
 <h3>Schema migration<a class="headerlink" href="#schema-migration" title="Permalink to this headline">¶</a></h3>
 <p>In case there are schema changes to any of the tracked live tables, the history
-tables have to be changed as well. Currently, this happens manually, but will
-become automated eventually (using Postgres DDL triggers). This means</p>
+tables have to be changed as well and triggers have to be regenerated.
+Currently, this happens manually, but will become automated eventually (using
+Postgres DDL triggers). This means</p>
 <ul class="simple">
 <li>a) if a live table is created, a new history table has to be created for it
-(call <code class="docutils literal"><span class="pre">SELECT</span> <span class="pre">create_history_table(&lt;schema&gt;,</span> <span class="pre">&lt;tablename&gt;::regclass,</span>
-<span class="pre">&lt;timecolumn&gt;);</span></code>, with <code class="docutils literal"><span class="pre">&lt;timecolumn&gt;</span></code> being an edit reference time, e.g.
-<code class="docutils literal"><span class="pre">edition_time</span></code> for most CATMAID tables). To let CATMAID know if you expect
-this table to have a history table, Add the table to the appropriate list
-in the <code class="docutils literal"><span class="pre">HistoryTableTest</span></code> class. This way you can also mark a table as not
-versioned.</li>
+(call <code class="docutils literal"><span class="pre">SELECT</span> <span class="pre">create_history_table(</span> <span class="pre">&lt;tablename&gt;::regclass,</span>&nbsp; <span class="pre">&lt;timecolumn&gt;);</span></code>,
+with <code class="docutils literal"><span class="pre">&lt;timecolumn&gt;</span></code> being an edit reference time, e.g.
+<code class="docutils literal"><span class="pre">edition_time</span></code> for most CATMAID tables). If <code class="docutils literal"><span class="pre">&lt;timecolumn&gt;</span></code> is <code class="docutils literal"><span class="pre">NULL</span></code>, a
+time tracking table will be created automatically. To let CATMAID know if you
+expect this table to have a history table, add the table to the appropriate
+list in the <code class="docutils literal"><span class="pre">HistoryTableTest</span></code> class. This way you can also mark a table as
+not versioned.</li>
 <li>b) if a live table is renamed, the history table is renamed accordingly, use
 the function <code class="docutils literal"><span class="pre">history_table_name(&lt;tablename&gt;::regclass)</span></code> to create the new name,</li>
 <li><ol class="first loweralpha" start="3">
@@ -157,19 +159,27 @@ changed without backup to save storage space or</li>
 </ol>
 </li>
 </ul>
-<p>These changes should be done as part of the schema modifying migration. Below
-you will find a an example of the migration SQL code to update the data type of
-a particular column of a table. In this particular case the <code class="docutils literal"><span class="pre">value</span></code> column of
-the <code class="docutils literal"><span class="pre">client_data</span></code> table changes its type from <code class="docutils literal"><span class="pre">text</span></code> to <code class="docutils literal"><span class="pre">jsonb</span></code>, which
-should be reflected directly in the history table:</p>
+<p>These changes should be done as part of the schema modifying migration. For all
+changes except live table creation and deletion, triggers have to be
+regenerated. To do this, call <code class="docutils literal"><span class="pre">PERFORM</span> <span class="pre">update_history_tracking_for_table(</span>
+<span class="pre">&lt;tablename&gt;::regclass</span> <span class="pre">)</span></code> for individual tables or update all tables at once
+with <code class="docutils literal"><span class="pre">PERFORM</span> <span class="pre">update_history_tracking()</span></code>. This should make sure all changes
+are baked into the trigger functions.</p>
+<p>Below you will find an example of the migration SQL code to update the data
+type of a particular column of a table. In this particular case the <code class="docutils literal"><span class="pre">value</span></code>
+column of the <code class="docutils literal"><span class="pre">client_data</span></code> table changes its type from <code class="docutils literal"><span class="pre">text</span></code> to <code class="docutils literal"><span class="pre">jsonb</span></code>,
+which should be reflected directly in the history table:</p>
 <div class="highlight-python"><div class="highlight"><pre>DO $$
 BEGIN
+-- Update history table
 EXECUTE format(
     &#39;ALTER TABLE %1$s &#39;
     &#39;ALTER COLUMN value &#39;
     &#39;TYPE jsonb &#39;
     &#39;USING value::jsonb&#39;,
     history_table_name(&#39;client_data&#39;::regclass));
+-- Update triggers
+PERFORM update_history_tracking_for_table(&#39;client_data&#39;::regclass);
 END
 $$;
 </pre></div>
