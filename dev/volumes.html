@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Volumes &mdash; CATMAID 2016.08.09-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" type="text/css" />
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2016.08.09-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="CATMAID 2016.08.09-dev documentation" href="index.html" />
+    <link rel="up" title="User Documentation" href="user.html" />
+    <link rel="next" title="Frequently Asked (User) Questions" href="user_faq.html" />
+    <link rel="prev" title="Using the CATMAID API" href="api.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="user_faq.html" title="Frequently Asked (User) Questions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Using the CATMAID API"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.08.09-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="user.html" accesskey="U">User Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="volumes">
+<span id="id1"></span><h1>Volumes<a class="headerlink" href="#volumes" title="Permalink to this headline">¶</a></h1>
+<p>Besides skeletons CATMAID can also generate and display 3D meshes, which it
+calls volumes. At the moment the support is basic, but can be useful already.
+They are arbitrary triangle meshes or polyhedra, stored as PostGIS data for fast
+access. Volumes are associated to projects and can currently not be shared
+between them without data duplication.</p>
+<p>The 3D Viewer&#8217;s &#8220;View settings&#8221; tab allows to mark known volumes as visible.
+Checkboxes for individual volumes are accessible from a drop down menu. If a
+volume becomes visible, it takes the currently selected opacity and color from
+the color selector close to the drop down menu. If the &#8220;Faces&#8221; option is
+selected, filled triangles are displayed rather than a wireframe.</p>
+<p>And since CATMAID&#8217;s 3D viewer supports a textured Z plane, the volume&#8217;s
+intersection with an image stack can be visually inspected as well. However,
+there is not yet a way to show volumes as a layer in a stack viewer.</p>
+<p>Volumes are also accessible from the Volume Manager widget, which can be opened
+with the help of the 3D cube icon in the Tracing Tool&#8217;s button panel. It shows
+all available volumes and some meta information on them. Double clicking table
+entries allows users to edit basic information, like its name. Additionally, the
+volume&#8217;s bounding box is displayed on top of the image data of the active stack
+viewer. The mesh itself is not editable from CATMAID&#8217;s web-client at this point.</p>
+<p>The volume widget also provides means to generate new volumes based on neurons,
+synapses or simply as a bounding box. The sub-sections below provide some detail
+on this.</p>
+<p>Besides display, CATMAID can currently use volumes only to warn if nodes are
+created outside of them. This is useful, for instance, if one wants to
+constrain neuron reconstruction to a given compartment. To select a volume for
+which warnings should be generated open the settings widget and open the
+section called &#8220;Warnings&#8221;. If a volume is selected from the drop down menu,
+warnings will be generated for the current session.</p>
+<div class="section" id="volume-generation">
+<h2>Volume generation<a class="headerlink" href="#volume-generation" title="Permalink to this headline">¶</a></h2>
+<p>In CATMAID, volumes can either be added through the volume manager or directly
+through the HTTP API.</p>
+<div class="section" id="volume-manager">
+<h3>Volume manager<a class="headerlink" href="#volume-manager" title="Permalink to this headline">¶</a></h3>
+<p>Pressing the &#8220;Add new volume&#8221; button brings up a user interface to generate and
+add new volumes. The first thing to do is to select the new volume&#8217;s type,
+available are bounding box, convex hull and alpha shape. The first is simply an
+axis aligned box, previewed in the tracing layer. After configuration,
+&#8220;Save&#8221; can be pressed to store the volume on the server. Bounding boxes are
+currently the only volumes that can be edited after they have been created.</p>
+<p>The remaining two volume types require a point set to operate on and can be
+previewed in the 3D viewer (it will take the first one open). For both a
+skeleton source can be selected on which different filters can further constrain
+the set of treenodes that are actually used. This es especially useful if a
+compartment is already reconstructed and a convex or concave hull describes it
+reasonably well. The skeletons&#8217; treenodes can be used create volumes.
+Alternatively, one can create new dummy neurons for the sole purpose pf volume
+generation by roughly outlining a compartment.</p>
+<p>Skeletons can contain a lot of treenodes. Therefore, to reduce computation
+costs, and to provide more flexibility it is possible to apply filters to the
+input set of treenodes (coming from the selected skeleton source). One could for
+instance select only branch nodes, roots or connectors. It is possible to add
+multiple filters at the same time. All filters work on the nodes of the
+skeletons provided by the selected source. The results of all filters are
+combined with, optionally different, set operations. A union merges both
+results and takes all; an intersection only allows what is in both sets. This
+happens in a left associative fashion (or, here, since a table representation
+is used, &#8220;top associative&#8221;). Each filter operates on the same set of input
+nodes and only their combination creates the final result.  By default, if no
+filter is used, all nodes from the input skeletons are used.</p>
+<p>To add a filter, select the type, configure it through the settings below the
+type selection and press &#8220;Add new filter rule&#8221; and continue with the next filter.</p>
+<p>An example: Add an &#8220;Only branch nodes&#8221; filter and then select a new type, say
+Synaptic connections to other neurons and select a merge operation . For
+synaptic connections, you now can select the partners (or choose None for any
+partner) and the type of relation that is required. After the second filter is
+added, you have a point set of branch nodes and connector nodes. Now you can go
+ahead and adjust the actual volume properties, e.g. the alpha value (to filter
+out particular tetrahedra, or optionally triangles).</p>
+<p>Pressing the &#8220;Add new volume&#8221; button will generate the mesh. Keep in mind that
+volumes are materialized after they are created and currently can&#8217;t be edited
+after creation. The screenshot below is taken during the volume generation
+using alpha shapes on a set of filtered skeletons. It shows a preview from the
+Volume Manager and as can be seen, disconnected meshes are supported as well.</p>
+<a class="lightimage"
+               data-lightbox="group-index"
+               href="_images/volumes-alpha-shape-setup.png"
+               title="Volume generation in CATMAID based on alpha shapes working on a set of filtered treenodes, supports disconnected meshes"
+               data-title="Volume generation in CATMAID based on alpha shapes working on a set of filtered treenodes, supports disconnected meshes"
+               ><img src="_images/volumes-alpha-shape-setup.png"
+                     class=""
+                     width="600px"
+                     height="350px"
+                     alt=""/>
+                </a></div>
+<div class="section" id="api">
+<h3>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h3>
+<p>If wanted, volumes can also be created outside of CATMAID and then loaded into
+into it through its HTTP API. As long as it is possible to
+represent them as a generic triangle mesh, loading them into CATMAID
+should be easy. The HTTP endpoint to use is:</p>
+<div class="highlight-python"><div class="highlight"><pre>/{project_id}/volumes/add
+</pre></div>
+</div>
+<p>For more details on the API itself, consult the <a class="reference external" href="api">API documentation</a>,
+which is available under <code class="docutils literal"><span class="pre">/apis</span></code> on every CATMAID instance.</p>
+<p>To store a volume through the API, you have to create a POST request which
+contains the fields &#8220;type&#8221; (set to &#8220;trimesh&#8221;), &#8220;title&#8221; (a representative title)
+and &#8220;mesh&#8221;. It is expected to be a string that encodes two lists in JSON
+format: [[points], [triangles]]. The list of points contains lists of three
+numbers, each one representing a vertex in the mesh. The array of triangles
+also contains three element lists as items. Each one represents a triangle
+based on the points in the other array, that are referenced by the triangle
+index values. For instance, this would constitute a valid set of fields for the
+creation request:</p>
+<div class="highlight-python"><div class="highlight"><pre>title: &quot;Example mesh&quot;
+type: &quot;trimesh&quot;
+mesh: &quot;[[[0,0,0], [1,0,0], [0,1,0], [1,1,0]], [[0,1,2], [1,3,2]]]&quot;
+</pre></div>
+</div>
+<p>If everything went well, the endpoint should return a response with two JSON
+fields: &#8220;success&#8221; (should be true) and &#8220;volume_id&#8221;, which holds he ID of the
+newly created volume.</p>
+<p>If you have an API token generated for your CATMAID user, you could also use
+<code class="docutils literal"><span class="pre">curl</span></code>, to load the mesh from a JSON file (having the fields above):</p>
+<div class="highlight-python"><div class="highlight"><pre>curl -X POST -d @&lt;json-file&gt; &lt;catmaid_url&gt;/&lt;project_id&gt;/volumes/add \
+  --header &quot;Content-Type: application/json&quot; \
+  --header &quot;X-Authorization: Token &lt;api-token&gt;&quot;
+</pre></div>
+</div>
+<p>where &lt;catmaid_url&gt; is the URL of your CATMAID instance, &lt;json-file&gt; being the
+file path to a JSON file representing the data to send (see above),
+&lt;project_id&gt; is the project ID (visible when creating a link to a view) and
+&lt;api-token&gt; being your <a class="reference external" href="api-token">API token</a>.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo" src="_static/catmaidlogo.png" alt="Logo" align="left"/>
+</a></p>
+<br clear="all"/><br /><h3><a href="index.html">Home</a></h3>
+<h3><a href="screenshots.html">Screenshots</a></h3>
+<h3><a href="whouses.html">Who uses it?</a></h3>
+<h3><a href="publications.html">Publications</a></h3>
+<h3><a href="funding.html">Funding</a></h3>
+<h3><a href="credits.html">Credits</a></h3>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/catmaid/CATMAID">Source Code</a></li>
+  <li><a href="http://github.com/catmaid/CATMAID/issues">Issues</a></li>
+  <li><a href="http://groups.google.com/group/CATMAID">Mailinglist</a></li>
+  <li><a href="http://fly.mpi-cbg.de/~saalfeld/catmaid/">Old page</a></li>
+</ul>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17713054-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Volumes</a><ul>
+<li><a class="reference internal" href="#volume-generation">Volume generation</a><ul>
+<li><a class="reference internal" href="#volume-manager">Volume manager</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation</a><ul>
+  <li><a href="user.html">User Documentation</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">Using the CATMAID API</a></li>
+      <li>Next: <a href="user_faq.html" title="next chapter">Frequently Asked (User) Questions</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2016, CATMAID Developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
