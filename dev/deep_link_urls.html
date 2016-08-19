@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Deep Link URL Format &mdash; CATMAID 2016.08.12-dev documentation</title>
+    
+    <link rel="stylesheet" href="_static/jinja.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" type="text/css" />
+    <link rel="stylesheet" href="_static/style.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2016.08.12-dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script type="text/javascript" src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="CATMAID 2016.08.12-dev documentation" href="index.html" />
+    <link rel="up" title="Developer Documentation" href="developer.html" />
+    <link rel="next" title="Database Migrations" href="dbmigration.html" />
+    <link rel="prev" title="Tile Source Conventions" href="tile_sources.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dbmigration.html" title="Database Migrations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tile_sources.html" title="Tile Source Conventions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">CATMAID 2016.08.12-dev documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="developer.html" accesskey="U">Developer Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="deep-link-url-format">
+<h1>Deep Link URL Format<a class="headerlink" href="#deep-link-url-format" title="Permalink to this headline">¶</a></h1>
+<p>CATMAID supports deep link URLs that allow users to share persistent references
+to particular stack locations and views. These URLs also support opening tools,
+multiple stack viewers, and limited specialized behaviors such as activating
+nodes in the tracing tool.</p>
+<p>CATMAID deep link URLs are standard HTTP URLs with query strings, for example:</p>
+<blockquote>
+<div><code class="docutils literal"><span class="pre">https://localhost/cat/?pid=1&amp;zp=0&amp;yp=0&amp;xp=0&amp;tool=navigator</span></code></div></blockquote>
+<p>All URLs begin with the protocol, hostname and path (including trailing slash)
+of the CATMAID instance <a class="reference internal" href="installation.html#basic-installation"><span>configured during installation</span></a>.</p>
+<div class="section" id="required-query-parameters">
+<h2>Required Query Parameters<a class="headerlink" href="#required-query-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">pid</span></code> (integer)</dt>
+<dd>ID of the project to open.</dd>
+</dl>
+<p><code class="docutils literal"><span class="pre">zp</span></code> (integer)</p>
+<p><code class="docutils literal"><span class="pre">yp</span></code> (integer)</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">xp</span></code> (integer)</dt>
+<dd>Coordinates in project space (nm) to center in the stack viewer.</dd>
+<dt><code class="docutils literal"><span class="pre">tool</span></code> (string)</dt>
+<dd>Name of the tool to open. Must be one of <code class="docutils literal"><span class="pre">navigator</span></code>, <code class="docutils literal"><span class="pre">tracingtool</span></code>,
+<code class="docutils literal"><span class="pre">segmentationtool</span></code> or <code class="docutils literal"><span class="pre">classification_editor</span></code>.</dd>
+</dl>
+</div>
+<div class="section" id="optional-query-parameters">
+<h2>Optional Query Parameters<a class="headerlink" href="#optional-query-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">active_node_id</span></code> (integer)</dt>
+<dd>Specifies the ID of a node to activate in the tracing tool.</dd>
+<dt><code class="docutils literal"><span class="pre">sid&lt;n&gt;</span></code> (integer)</dt>
+<dd>Opens the stack with this ID in a stack viewer. Multiple stacks can be
+opened by passing incremental indexes, i.e., <code class="docutils literal"><span class="pre">sid0</span></code>, <code class="docutils literal"><span class="pre">sid1</span></code>, etc.
+The index must start at 0.</dd>
+<dt><code class="docutils literal"><span class="pre">s&lt;n&gt;</span></code> (integer)</dt>
+<dd>Zoom level for the corresponding stack ID above. That is, <code class="docutils literal"><span class="pre">s0</span></code> specifies
+the initial zoom level for the stack viewer viewing the stack ID passed in
+<code class="docutils literal"><span class="pre">sid0</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">composite</span></code> (integer)</dt>
+<dd>If <code class="docutils literal"><span class="pre">1</span></code>, load all stacks as layers in a single stack viewer rather than
+separate stack viewers.</dd>
+<dt><code class="docutils literal"><span class="pre">current_dataview</span></code> (integer)</dt>
+<dd>ID of a data view to switch to.</dd>
+</dl>
+</div>
+<div class="section" id="legacy-query-parameters">
+<h2>Legacy Query Parameters<a class="headerlink" href="#legacy-query-parameters" title="Permalink to this headline">¶</a></h2>
+<p>These parameters may be found in old URLs but are no longer generated and may
+not be properly processed.</p>
+<p><code class="docutils literal"><span class="pre">x</span></code> (integer)</p>
+<p><code class="docutils literal"><span class="pre">y</span></code> (integer)</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">z</span></code> (integer)</dt>
+<dd>Coordinates in project space to center the stack viewer. Used in an
+obsolete query format where no project or stack ID were specified and
+defaulted to <code class="docutils literal"><span class="pre">1</span></code>.</dd>
+<dt><code class="docutils literal"><span class="pre">s</span></code> (integer)</dt>
+<dd>Zoom level for the stack viewer.</dd>
+<dt><code class="docutils literal"><span class="pre">active_skeleton_id</span></code> (integer)</dt>
+<dd>Specifies the ID of a skeleton to activate in the tracing tool.</dd>
+<dt><code class="docutils literal"><span class="pre">account</span></code> (string)</dt>
+<dd>Username with which to login to CATMAID.</dd>
+<dt><code class="docutils literal"><span class="pre">password</span></code> (string)</dt>
+<dd>Password with which to login to CATMAID.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><p class="logo"><a href="index.html">
+  <img class="logo" src="_static/catmaidlogo.png" alt="Logo" align="left"/>
+</a></p>
+<br clear="all"/><br /><h3><a href="index.html">Home</a></h3>
+<h3><a href="screenshots.html">Screenshots</a></h3>
+<h3><a href="whouses.html">Who uses it?</a></h3>
+<h3><a href="publications.html">Publications</a></h3>
+<h3><a href="funding.html">Funding</a></h3>
+<h3><a href="credits.html">Credits</a></h3>
+<h3>Useful Links</h3>
+<ul>
+  <li><a href="http://github.com/catmaid/CATMAID">Source Code</a></li>
+  <li><a href="http://github.com/catmaid/CATMAID/issues">Issues</a></li>
+  <li><a href="http://groups.google.com/group/CATMAID">Mailinglist</a></li>
+  <li><a href="http://fly.mpi-cbg.de/~saalfeld/catmaid/">Old page</a></li>
+</ul>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17713054-5']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Deep Link URL Format</a><ul>
+<li><a class="reference internal" href="#required-query-parameters">Required Query Parameters</a></li>
+<li><a class="reference internal" href="#optional-query-parameters">Optional Query Parameters</a></li>
+<li><a class="reference internal" href="#legacy-query-parameters">Legacy Query Parameters</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation</a><ul>
+  <li><a href="developer.html">Developer Documentation</a><ul>
+      <li>Previous: <a href="tile_sources.html" title="previous chapter">Tile Source Conventions</a></li>
+      <li>Next: <a href="dbmigration.html" title="next chapter">Database Migrations</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2016, CATMAID Developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>.
+    </div>
+  </body>
+</html>
