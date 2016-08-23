@@ -168,7 +168,7 @@ running on <code class="docutils literal"><span class="pre">localhost</span></co
 <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="s">&#39;https://localhost/{}/annotations/query&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
         <span class="n">auth</span><span class="o">=</span><span class="n">CatmaidApiTokenAuth</span><span class="p">(</span><span class="n">token</span><span class="p">),</span>
-        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;object_ids[]&#39;</span><span class="p">:</span> <span class="n">object_ids</span><span class="p">})</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;object_ids&#39;</span><span class="p">:</span> <span class="n">object_ids</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
