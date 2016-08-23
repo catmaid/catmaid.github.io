@@ -337,6 +337,10 @@ following options:</p>
 </ol>
 <p>We usually prefer to use Nginx because of a more straight-forward configuration,
 smaller memory footprint and better performance with Gunicorn.</p>
+<p>Note if the domain you are serving your image data from is different from where
+CATMAID is running, <a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a>
+headers have to be sent by the image server or some aspects of the web front-end
+won&#8217;t work as expected. For more details, have a look <a class="reference internal" href="alternative_install.html#nginx-image-data"><span>here</span></a>.</p>
 <p>In general you want to fine-tune your setup to improve performance. Please have
 a look at our <a class="reference internal" href="administration.html#performance-tuning"><span>collection of advice</span></a> for the various
 infrastructure parts (e.g.  webserver, database, file system). This can really

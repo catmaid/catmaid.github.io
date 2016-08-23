@@ -152,6 +152,23 @@ ALTER EXTENSION postgis UPDATE;
 </pre></div>
 </div>
 </div>
+<div class="section" id="no-image-data-due-to-lack-of-cross-origin-resource-sharing-cors-headers">
+<h2>No image data due to lack of Cross-Origin Resource Sharing (CORS) headers<a class="headerlink" href="#no-image-data-due-to-lack-of-cross-origin-resource-sharing-cors-headers" title="Permalink to this headline">¶</a></h2>
+<p>You might get an error like this if you don&#8217;t serve images with CORS header fields:</p>
+<div class="highlight-python"><div class="highlight"><pre>Image from origin &#39;http://images.catmaid-host.org&#39; has been blocked from
+loading by Cross-Origin Resource Sharing policy: No
+&#39;Access-Control-Allow-Origin&#39; header is present on the requested resource.
+Origin &#39;http://other.catmaid-host.org&#39; is therefore not allowed access.
+&quot;&quot;&quot;
+</pre></div>
+</div>
+<p>This can be fixed by sending an access policy header along with the images,
+coming in the form of this header field:</p>
+<div class="highlight-python"><div class="highlight"><pre>Access-Control-Allow-Origin *
+</pre></div>
+</div>
+<p>An example setup for Nginx can be found <a class="reference internal" href="alternative_install.html#nginx-image-data"><span>here</span></a>.</p>
+</div>
 </div>
 
 
@@ -197,6 +214,7 @@ ALTER EXTENSION postgis UPDATE;
 <li><a class="reference internal" href="#i-get-an-error-500-response-and-in-debug-mode-i-see-the-error-libhdf5-so-8-cannot-open-shared-object-file-no-such-file-or-directory-this-might-have-started-after-the-system-update">I get an error 500 response and in debug mode I see the error &#8220;libhdf5.so.8: cannot open shared object file: No such file or directory&#8221;. This might have started after the system update.</a></li>
 <li><a class="reference internal" href="#i-get-an-error-500-response-and-in-debug-mode-i-see-the-error-libboost-python-so-1-56-0-cannot-open-shared-object-file-no-such-file-or-directory-or-any-other-boost-version-this-might-have-started-after-a-system-update">I get an error 500 response and in debug mode I see the error &#8220;libboost_python.so.1.56.0: cannot open shared object file: No such file or directory&#8221;. (Or any other boost version) This might have started after a system update.*</a></li>
 <li><a class="reference internal" href="#catmaid-stopped-working-after-postgis-update">CATMAID stopped working after PostGIS update</a></li>
+<li><a class="reference internal" href="#no-image-data-due-to-lack-of-cross-origin-resource-sharing-cors-headers">No image data due to lack of Cross-Origin Resource Sharing (CORS) headers</a></li>
 </ul>
 </li>
 </ul>

@@ -134,6 +134,32 @@ defines from where the static files should be served. The <cite>&lt;CATMAID-PATH
 placeholder needs to be replaced with the absolute path to your CATMAID
 folder. The second location block passes all requests to the WSGI server
 defined before and allows therefore the execution of Django.</p>
+<div class="section" id="image-data">
+<span id="nginx-image-data"></span><h4>Image data<a class="headerlink" href="#image-data" title="Permalink to this headline">¶</a></h4>
+<p>Serving image data works the same way as serving CATMAID static data. However,
+you might want to add a so called
+<a class="reference external" href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> header to
+your Nginx location block:</p>
+<div class="highlight-python"><div class="highlight"><pre>Access-Control-Allow-Origin *
+</pre></div>
+</div>
+<p>Without this header, only a CATMAID instance served from the <em>same</em> domain name
+as the image data will be able to access it. If the image data should be accessed
+by CATMAID instances served  on other domains, this header is required. A
+typical tile data location block could look like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>location /tiles/ {
+  # Regular cached tile access
+  alias /path/to/tiles/;
+  expires max;
+  add_header Cache-Control public;
+  # CORS header to allow cross-site access to the tile data
+  add_header Access-Control-Allow-Origin *;
+}
+</pre></div>
+</div>
+<p>Besides adding the CORS header, caching is also set to be explicitly allowed,
+which might be helpful for data that doesn&#8217;t change often.</p>
+</div>
 <div class="section" id="a-note-on-the-proxy-redirect-command">
 <h4>A note on the <code class="docutils literal"><span class="pre">proxy_redirect</span></code> command<a class="headerlink" href="#a-note-on-the-proxy-redirect-command" title="Permalink to this headline">¶</a></h4>
 <p>In general, this command modifies the <em>Location</em> and the <em>Refresh</em> HTTP header
@@ -360,6 +386,7 @@ $ sudo supervisorctl start catmaid:
 <li><a class="reference internal" href="#">Setting Up Nginx for CATMAID</a><ul>
 <li><a class="reference internal" href="#setup-based-on-nginx-and-gevent">Setup based on Nginx and Gevent</a><ul>
 <li><a class="reference internal" href="#nginx-configuration">Nginx configuration</a><ul>
+<li><a class="reference internal" href="#image-data">Image data</a></li>
 <li><a class="reference internal" href="#a-note-on-the-proxy-redirect-command">A note on the <code class="docutils literal"><span class="pre">proxy_redirect</span></code> command</a></li>
 </ul>
 </li>
