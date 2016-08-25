@@ -77,7 +77,9 @@ asynchronous task related Celery and Kombu.</p>
 <div class="section" id="id1">
 <h2>History tables<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>Each versioned table has a so called history table associated, indicated by the
-<code class="docutils literal"><span class="pre">__history</span></code> suffix (e.g. <code class="docutils literal"><span class="pre">project</span></code> and <code class="docutils literal"><span class="pre">project__history</span></code>). A double
+<code class="docutils literal"><span class="pre">__history</span></code> suffix (e.g. <code class="docutils literal"><span class="pre">project</span></code> and <code class="docutils literal"><span class="pre">project__history</span></code>). A convenient
+view that includes live and history data, is available with the
+<code class="docutils literal"><span class="pre">__with_history</span></code> suffix. This is simply a union between both tables. A double
 underscore is used to minimize collisions with existing names. This history
 table is populated automatically through database triggers: whenever data in a
 live table is updated or deleted, the history table will be be updated. It
