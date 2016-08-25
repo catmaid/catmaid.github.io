@@ -341,9 +341,12 @@ found <a class="reference internal" href="celeryinstall.html#celery-supervisord"
 in place, <code class="docutils literal"><span class="pre">supervisord</span></code> can be instructed to reload its configuration and
 start the catmaid group:</p>
 <div class="highlight-python"><div class="highlight"><pre>$ sudo supervisorctl reread
+$ sudo supervisorctl update
 $ sudo supervisorctl start catmaid:
 </pre></div>
 </div>
+<p>For changed configuration files also both <code class="docutils literal"><span class="pre">reread</span></code> and <code class="docutils literal"><span class="pre">update</span></code> are
+required.</p>
 </div>
 </div>
 
