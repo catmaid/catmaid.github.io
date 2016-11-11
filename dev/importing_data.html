@@ -268,6 +268,89 @@ above. But please keep in mind to <em>not use the tab character</em> in the
 whitespace indentation (but simple spaces) as this isn&#8217;t allowed in
 YAML.</p>
 </div>
+<div class="section" id="ontology-and-classification-import">
+<h3>Ontology and classification import<a class="headerlink" href="#ontology-and-classification-import" title="Permalink to this headline">¶</a></h3>
+<p>The project files explained in the last section can also be used to import
+ontologies and classifications. While CATMAID supports arbitrary graphs to
+represent ontologies and classifications,only tree structures can be imported at
+the moment.</p>
+<p>The <code class="docutils literal"><span class="pre">project</span></code> object supports an optional <code class="docutils literal"><span class="pre">ontology</span></code> field, which defines an
+ontology hierarchy with lists of lists. An optional <code class="docutils literal"><span class="pre">classification</span></code> field can
+be used to define a list of ontology paths that get instantiated based on the
+provided ontology. Classification fields require that an ontology is defined and
+can be used on <code class="docutils literal"><span class="pre">project</span></code> level, <code class="docutils literal"><span class="pre">stack</span></code> level and the <code class="docutils literal"><span class="pre">stackgroup</span></code> level.
+Consider this example:</p>
+<div class="highlight-python"><div class="highlight"><pre>project:
+   name: &quot;test&quot;
+   ontology:
+     - class: &#39;Metazoa&#39;
+       children:
+         - relation: &#39;has_a&#39;
+           class: &#39;Deuterostomia&#39;
+         - relation: &#39;has_a&#39;
+           class: &#39;Protostomia&#39;
+           children:
+             - relation: &#39;has_a&#39;
+               class: &#39;Lophotrochozoa&#39;
+               children:
+                 - relation: &#39;has_a&#39;
+                   class: &#39;Nematostella&#39;
+                   children:
+                     - relation: &#39;has_a&#39;
+                       class: &#39;Lineus longissimus&#39;
+   stackgroups:
+     - name: &#39;Test group&#39;
+       classification:
+          - [&#39;Metazoa&#39;, &#39;Protostomia&#39;, &#39;Lophotrochozoa&#39;, &#39;Nematostella&#39;, &#39;Lineus longissimus&#39;]
+   stacks:
+     - url: &quot;https://example.org/data/imagestack/&quot;
+       name: &quot;Channel 1&quot;
+       metadata: &quot;PMT Offset: 10, Laser Power: 0.5, PMT Voltage: 550&quot;
+       dimension: &quot;(1024,1024,800)&quot;
+       resolution: &quot;(2.0,2.0,1.0)&quot;
+       zoomlevels: 1
+       fileextension: &quot;jpg&quot;
+       translation: &quot;(10.0, 20.0, 30.0)&quot;
+       classification:
+          - [&#39;Metazoa&#39;, &#39;Deuterostomia&#39;]
+     - url: &quot;https://example.org/data/imagestack-sample-108/&quot;
+       name: &quot;Channel 1&quot;
+       metadata: &quot;PMT Offset: 10, Laser Power: 0.5, PMT Voltage: 550&quot;
+       dimension: &quot;(1024,1024,800)&quot;
+       resolution: &quot;(2.0,2.0,1.0)&quot;
+       zoomlevels: 1
+       fileextension: &quot;jpg&quot;
+       translation: &quot;(10.0, 20.0, 30.0)&quot;
+       stackgroups:
+        - name: &quot;Test group&quot;
+          relation: &quot;has_channel&quot;
+     - folder: &quot;Sample108_FIB_catmaid copy&quot;
+       name: &quot;Channel 2&quot;
+       metadata: &quot;PMT Offset: 10, Laser Power: 0.5, PMT Voltage: 550&quot;
+       dimension: &quot;(1024,1024,800)&quot;
+       resolution: &quot;(2.0,2.0,1.0)&quot;
+       zoomlevels: 1
+       fileextension: &quot;jpg&quot;
+       stackgroups:
+        - name: &quot;Test group&quot;
+          relation: &quot;has_channel&quot;
+</pre></div>
+</div>
+<p>The project level ontology definition represent an ontology with the root node
+&#8220;Metazoa&#8221; which has two children: &#8220;Deuterostomia&#8221; and  &#8220;Protostomia&#8221;, connected
+through a &#8220;has_a&#8221; relation. While the first child is a leaf node and has no
+children, the second child has a child node as well (and so on). It is possible
+to have multiple roots (i.e. separate ontology graphs) and multiple children,
+both are lists.</p>
+<p>Individual stacks and stackgroups are then allowed to instantiate a certain path
+of the ontology and be linked to the leaf node of the path. They do this by
+supporting a <code class="docutils literal"><span class="pre">classification</span></code> field. The example creates two classification
+paths and links one leaf node to the stack group and one to an individual stack.</p>
+<p>Currently, the importer expects that those two classes are only related on the
+ontology level a single time. This allows for an easier file syntax with a
+simple list. An import will fail if the project defined ontology doesn&#8217;t
+contain a class used in a classification.</p>
+</div>
 <div class="section" id="file-and-folder-layout">
 <h3>File and Folder Layout<a class="headerlink" href="#file-and-folder-layout" title="Permalink to this headline">¶</a></h3>
 <p>The importing tool expects a certain file any folder layout to work with.
@@ -417,6 +500,7 @@ imported and, if there were problems, which ones not.</p>
 </li>
 <li><a class="reference internal" href="#importing-project-and-stack-information">Importing project and stack information</a><ul>
 <li><a class="reference internal" href="#project-files">Project Files</a></li>
+<li><a class="reference internal" href="#ontology-and-classification-import">Ontology and classification import</a></li>
 <li><a class="reference internal" href="#file-and-folder-layout">File and Folder Layout</a></li>
 <li><a class="reference internal" href="#using-the-importer">Using the Importer</a></li>
 </ul>
